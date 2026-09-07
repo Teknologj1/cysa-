@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+/* next-themes usa attribute="class": a variante dark segue a classe .dark */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+
+  --background: #ffffff;
+  --foreground: #0b1220;
+
+  --border: #e2e8f0;
+  --muted: #f1f5f9;
+  --muted-fg: #52627a;
+
+  --primary: #0e7490;
+  --primary-fg: #ffffff;
+
+  --accent: #0891b2;
+  --success: #059669;
+  --warning: #d97706;
+  --danger: #dc2626;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --background: #070b12;
+  --foreground: #e6edf5;
+
+  --border: #1c2634;
+  --muted: #0e1521;
+  --muted-fg: #94a3b8;
+
+  --primary: #22d3ee;
+  --primary-fg: #04121a;
+
+  --accent: #22d3ee;
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #f87171;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-muted-fg: var(--muted-fg);
+  --color-mutedFg: var(--muted-fg);
+  --color-primary: var(--primary);
+  --color-primary-fg: var(--primary-fg);
+  --color-primaryFg: var(--primary-fg);
+  --color-accent: var(--accent);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu,
+    "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fundo com grade sutil, usado no hero */
+.grade-cyber {
+  background-image:
+    radial-gradient(
+      circle at 50% 0%,
+      color-mix(in srgb, var(--accent) 16%, transparent),
+      transparent 60%
+    ),
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--border) 70%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--border) 70%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 100% 100%, 44px 44px, 44px 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

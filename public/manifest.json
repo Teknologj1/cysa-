@@ -1,0 +1,35 @@
+{
+  "name": "CySA+ Prep — Curso preparatório CS0-003",
+  "short_name": "CySA+ Prep",
+  "description": "Curso preparatório para a certificação CompTIA CySA+ (CS0-003): módulos, laboratórios e simulados comentados, com estudo offline.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#070b12",
+  "theme_color": "#070b12",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["education", "productivity"],
+  "prefer_related_applications": false,
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Continuar o curso",
+      "short_name": "Curso",
+      "description": "Abrir os módulos do CS0-003",
+      "url": "/curso"
+    },
+    {
+      "name": "Fazer um simulado",
+      "short_name": "Simulado",
+      "description": "Praticar questões comentadas",
+      "url": "/simulado"
+    }
+  ]
+}
