@@ -3,6 +3,9 @@
 Da primeira visita na landing até o aluno concluir uma lição e fazer o
 checkpoint. Este documento é o mapa do que já funciona e do que falta.
 
+**Em produção:** https://cysa-tau.vercel.app — Vercel, Stripe em modo live e
+webhook de assinaturas configurados.
+
 ## O funil, passo a passo
 
 | # | Etapa | Onde acontece | Status |
@@ -11,7 +14,7 @@ checkpoint. Este documento é o mapa do que já funciona e do que falta.
 | 2 | Entende a proposta, os domínios e as fases | `/` | ✅ pronto |
 | 3 | Experimenta sem pagar (lições e questões grátis) | `/curso`, `/simulado` | ✅ pronto |
 | 4 | Compara planos | `/planos` | ✅ pronto |
-| 5 | Compra | `/api/checkout` → Stripe Checkout | ✅ pronto (falta credencial de produção) |
+| 5 | Compra | `/api/checkout` → Stripe Checkout | ✅ em produção |
 | 6 | Volta e tem o acesso liberado | `/sucesso` → `/api/checkout/verificar` | ⚠️ liberação é local, no aparelho |
 | 7 | Entra na área do aluno | `/curso` | ✅ pronto |
 | 8 | Abre uma seção e uma lição | `/curso/[secaoId]/[licaoId]` | ✅ pronto |
@@ -24,23 +27,22 @@ checkpoint. Este documento é o mapa do que já funciona e do que falta.
 
 ## O que falta para o fluxo ficar de pé em produção
 
-### Fase A — colocar no ar e vender (em andamento)
+### Fase A — colocar no ar e vender ✅ concluída
 
 Roteiro completo em [`DEPLOY-VERCEL.md`](DEPLOY-VERCEL.md).
 
-1. **Preencher `src/content/empresa.ts`** — razão social, documento, endereço e
-   e-mails. Enquanto houver placeholder, as páginas legais avisam que o
-   documento não está finalizado. ⏳ *depende de você*
-2. **Revisão jurídica** dos termos e da política de privacidade, já escritos e
-   alinhados ao CDC e à LGPD. ⏳ *depende de você*
-3. **Produto e preços no Stripe** — `npm run stripe:setup` cria tudo a partir de
-   `content/planos.ts` e imprime os IDs. ✅ *automatizado*
-4. **Variáveis na Vercel** e webhook de assinaturas. ⏳ *depende de você*
-5. **Domínio + `NEXT_PUBLIC_SITE_URL`**. ⏳ *depende de você*
-6. **Imagem de Open Graph** gerada pelo próprio Next a partir dos pesos dos
-   domínios. ✅ *pronto*
-7. **Conferência do deploy** — `npm run verificar:deploy -- <url>` checa rotas,
-   PWA, cabeçalhos de segurança e checkout. ✅ *automatizado*
+1. ✅ Dados do responsável legal em `src/content/empresa.ts`
+2. ✅ Produto e preços no Stripe, em modo live
+3. ✅ Projeto na Vercel com as variáveis de ambiente cadastradas
+4. ✅ Webhook de assinaturas apontando para `/api/stripe/webhook`
+5. ✅ `NEXT_PUBLIC_SITE_URL` no domínio estável
+6. ✅ Imagem de Open Graph gerada pelo próprio Next
+7. ⏳ **Revisão jurídica** dos termos e da política de privacidade — os textos
+   estão escritos e alinhados ao CDC e à LGPD, mas precisam do aval de um
+   advogado antes da primeira cobrança real.
+
+> O ciclo completo foi validado em modo teste: checkout, retorno em `/sucesso`,
+> liberação do conteúdo e webhook entregando 200.
 
 ### Fase B — direito de acesso confiável (bloqueia escala)
 
@@ -93,7 +95,11 @@ Fase C  →  conteúdo entrando de forma contínua
 Fase D  →  crescimento
 ```
 
-A fase A pode ir ao ar em poucas horas de trabalho. A fase B é o que transforma
-o produto em serviço de assinatura de verdade — sem ela, alguém que cancele
+A fase A está concluída: o app vende e entrega. A fase B é o que transforma o
+produto em serviço de assinatura de verdade — sem ela, alguém que cancele
 continua com o conteúdo liberado naquele aparelho até o fim do período gravado
-localmente.
+localmente, e quem comprar no celular não terá acesso no computador.
+
+Enquanto a fase B não vem, a recomendação é vender para um grupo controlado
+(pré-venda, lista de espera, turma fechada), onde dá para resolver acesso na
+mão, em vez de abrir a venda ao público.
