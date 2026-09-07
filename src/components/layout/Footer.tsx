@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { EMPRESA, EMPRESA_CONFIGURADA } from "@/content/empresa";
+import { EXAME } from "@/content/exame";
 
 export default function Footer() {
   const ano = new Date().getFullYear();
@@ -7,11 +9,11 @@ export default function Footer() {
     <footer className="mt-16 border-t border-border bg-muted/40">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 pb-24 md:grid-cols-4 md:pb-10">
         <div className="md:col-span-2">
-          <h3 className="text-base font-semibold">CySA+ Prep</h3>
+          <h3 className="text-base font-semibold">{EMPRESA.nomeFantasia}</h3>
           <p className="mt-2 max-w-sm text-sm text-mutedFg">
-            Curso preparatório para a certificação CompTIA CySA+ (CS0-004), com
-            lições, laboratórios e simulados — instalável no celular e disponível
-            offline.
+            Curso preparatório para a certificação CompTIA CySA+ ({EXAME.codigo}
+            ), com lições, laboratórios e simulados — instalável no celular e
+            disponível offline.
           </p>
         </div>
 
@@ -59,15 +61,26 @@ export default function Footer() {
                 Privacidade
               </Link>
             </li>
+            {EMPRESA_CONFIGURADA && (
+              <li>
+                <a
+                  href={`mailto:${EMPRESA.emailContato}`}
+                  className="hover:text-foreground"
+                >
+                  Falar com o suporte
+                </a>
+              </li>
+            )}
           </ul>
         </div>
       </div>
 
       <div className="border-t border-border px-4 py-5">
         <p className="mx-auto max-w-6xl text-xs text-mutedFg">
-          © {ano} CySA+ Prep. CompTIA®, CySA+® e CS0-004 são marcas da CompTIA.
-          Este material é independente e não possui vínculo, patrocínio ou
-          endosso da CompTIA.
+          © {ano}{" "}
+          {EMPRESA_CONFIGURADA ? EMPRESA.razaoSocial : EMPRESA.nomeFantasia}.
+          CompTIA®, CySA+® e {EXAME.codigo} são marcas da CompTIA. Este material
+          é independente e não possui vínculo, patrocínio ou endosso da CompTIA.
         </p>
       </div>
     </footer>

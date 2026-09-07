@@ -24,16 +24,23 @@ checkpoint. Este documento é o mapa do que já funciona e do que falta.
 
 ## O que falta para o fluxo ficar de pé em produção
 
-### Fase A — colocar no ar e vender (bloqueia o lançamento)
+### Fase A — colocar no ar e vender (em andamento)
 
-1. **Deploy na Vercel** — seguir `docs/DEPLOY-VERCEL.md`. *(pequeno)*
-2. **Conta Stripe em produção** — criar produto e os três preços recorrentes,
-   cadastrar as variáveis e o webhook. *(pequeno)*
-3. **Termos e privacidade revisados** — os textos em `/termos` e `/privacidade`
-   são modelos com placeholders (`[RAZÃO SOCIAL]`, `[CNPJ]`,
-   `[E-MAIL DE CONTATO]`). Precisam de revisão jurídica antes de vender. *(pequeno)*
-4. **Domínio próprio + `NEXT_PUBLIC_SITE_URL`** apontando para ele. *(pequeno)*
-5. **Imagem de Open Graph** para o compartilhamento em redes e WhatsApp. *(pequeno)*
+Roteiro completo em [`DEPLOY-VERCEL.md`](DEPLOY-VERCEL.md).
+
+1. **Preencher `src/content/empresa.ts`** — razão social, documento, endereço e
+   e-mails. Enquanto houver placeholder, as páginas legais avisam que o
+   documento não está finalizado. ⏳ *depende de você*
+2. **Revisão jurídica** dos termos e da política de privacidade, já escritos e
+   alinhados ao CDC e à LGPD. ⏳ *depende de você*
+3. **Produto e preços no Stripe** — `npm run stripe:setup` cria tudo a partir de
+   `content/planos.ts` e imprime os IDs. ✅ *automatizado*
+4. **Variáveis na Vercel** e webhook de assinaturas. ⏳ *depende de você*
+5. **Domínio + `NEXT_PUBLIC_SITE_URL`**. ⏳ *depende de você*
+6. **Imagem de Open Graph** gerada pelo próprio Next a partir dos pesos dos
+   domínios. ✅ *pronto*
+7. **Conferência do deploy** — `npm run verificar:deploy -- <url>` checa rotas,
+   PWA, cabeçalhos de segurança e checkout. ✅ *automatizado*
 
 ### Fase B — direito de acesso confiável (bloqueia escala)
 

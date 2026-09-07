@@ -8,6 +8,8 @@ export type Plan = {
   /** Preço "cheio" para exibir riscado (opcional). */
   precoDeCentavos?: number;
   intervalo: "mês" | "3 meses" | "ano";
+  /** Recorrência no formato que a API do Stripe espera. */
+  recorrencia: { intervalo: "month" | "year"; contagem: number };
   /** Equivalente mensal, para comparação honesta entre os planos. */
   equivalenteMensalCentavos: number;
   destaque?: boolean;
@@ -26,6 +28,7 @@ export const PLANOS: Plan[] = [
     descricao: "Para quem quer começar hoje e avaliar sem compromisso.",
     precoCentavos: 4990,
     intervalo: "mês",
+    recorrencia: { intervalo: "month", contagem: 1 },
     equivalenteMensalCentavos: 4990,
     beneficios: [
       "Acesso a todas as seções publicadas do CS0-004",
@@ -44,6 +47,7 @@ export const PLANOS: Plan[] = [
     precoCentavos: 12990,
     precoDeCentavos: 14970,
     intervalo: "3 meses",
+    recorrencia: { intervalo: "month", contagem: 3 },
     equivalenteMensalCentavos: 4330,
     destaque: true,
     selo: "Mais escolhido",
@@ -64,6 +68,7 @@ export const PLANOS: Plan[] = [
     precoCentavos: 39700,
     precoDeCentavos: 59880,
     intervalo: "ano",
+    recorrencia: { intervalo: "year", contagem: 1 },
     equivalenteMensalCentavos: 3308,
     selo: "Melhor valor",
     beneficios: [

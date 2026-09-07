@@ -1,47 +1,85 @@
-# Deploy na Vercel
+# Lançamento na Vercel (Fase A)
 
-O projeto é um Next.js 15 padrão — a Vercel detecta tudo sozinha. O que exige
-atenção são as variáveis de ambiente do Stripe e o webhook.
+Roteiro do que falta para o app estar no ar vendendo. O repositório já está
+conectado à Vercel e a conta Stripe já existe, então a sequência abaixo é curta.
 
-## 1. Primeiro deploy
+Ao final, `npm run verificar:deploy` confere tudo sozinho.
 
-1. Acesse [vercel.com/new](https://vercel.com/new) e importe o repositório
-   `Teknologj1/cysa-`.
-2. Em **Branch**, escolha a branch que você quer publicar
-   (`claude/pwa-cysa-subscription-yx5gxn` enquanto o merge não acontece).
-3. Framework: **Next.js** (detectado automaticamente). Build command, output e
-   install command ficam no padrão.
-4. Clique em **Deploy**. O primeiro build leva cerca de dois minutos.
+---
 
-> Pelo terminal, o equivalente é `npx vercel` (preview) e `npx vercel --prod`
-> (produção), a partir da raiz do projeto.
+## 1. Preencher os dados do responsável legal
 
-## 2. Variáveis de ambiente
+Edite **`src/content/empresa.ts`** — é a fonte única usada pelos termos de uso,
+pela política de privacidade e pelo rodapé:
 
-Em **Project → Settings → Environment Variables**, cadastre para *Production* e
-*Preview*:
+```ts
+export const EMPRESA = {
+  nomeFantasia: "CySA+ Prep",
+  razaoSocial: "…",          // razão social ou seu nome completo
+  documento: "…",            // CNPJ ou CPF
+  endereco: "…",             // endereço completo (exigido pelo CDC)
+  emailContato: "…",         // atendimento ao cliente
+  emailEncarregado: "…",     // encarregado de dados (LGPD)
+  dominio: "…",              // domínio público, sem https://
+} as const;
+```
 
-| Variável | Obrigatória | Para que serve |
-| --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | sim | URL pública do app. Usada nas URLs de retorno do checkout, no sitemap e nos metadados |
-| `STRIPE_SECRET_KEY` | para vender | Chave secreta da conta Stripe (`sk_live_…` em produção) |
-| `STRIPE_PRICE_MENSAL` | para vender | ID do preço recorrente mensal (`price_…`) |
-| `STRIPE_PRICE_TRIMESTRAL` | para vender | ID do preço recorrente trimestral |
-| `STRIPE_PRICE_ANUAL` | para vender | ID do preço recorrente anual |
-| `STRIPE_WEBHOOK_SECRET` | para vender | Segredo do endpoint de webhook (`whsec_…`) |
+Enquanto houver campo com `[COLCHETES]`, as páginas legais exibem um aviso de
+documento não finalizado — de propósito, para nenhum contrato ir ao ar
+incompleto. O aviso some sozinho quando os campos forem preenchidos.
+
+> Os textos de `/termos` e `/privacidade` são modelos consistentes com o CDC e a
+> LGPD, mas **precisam de revisão jurídica** antes de você começar a cobrar.
+
+## 2. Criar produto e preços no Stripe
+
+O script lê os planos de `src/content/planos.ts` — a mesma fonte que a landing
+usa — e cria o produto e os três preços recorrentes em BRL:
+
+```bash
+echo "STRIPE_SECRET_KEY=sk_test_…" > .env.local
+
+npm run stripe:setup -- --dry-run   # confere o que seria criado
+npm run stripe:setup                # cria de verdade
+```
+
+Ele imprime as variáveis prontas para colar na Vercel:
+
+```
+STRIPE_PRICE_MENSAL=price_…
+STRIPE_PRICE_TRIMESTRAL=price_…
+STRIPE_PRICE_ANUAL=price_…
+```
+
+O script é idempotente: rodar de novo reaproveita o produto e os preços já
+criados com o mesmo valor e recorrência, em vez de duplicar. Rode uma vez com a
+chave de teste (`sk_test_…`) e, quando for cobrar de verdade, outra com a chave
+de produção (`sk_live_…`) — os IDs de preço são diferentes em cada ambiente.
+
+## 3. Cadastrar as variáveis na Vercel
+
+Em **Project → Settings → Environment Variables**, para *Production* e *Preview*:
+
+| Variável | Valor |
+| --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | URL pública do projeto, sem barra no fim |
+| `STRIPE_SECRET_KEY` | `sk_live_…` em produção, `sk_test_…` em preview |
+| `STRIPE_PRICE_MENSAL` | saída do passo 2 |
+| `STRIPE_PRICE_TRIMESTRAL` | saída do passo 2 |
+| `STRIPE_PRICE_ANUAL` | saída do passo 2 |
+| `STRIPE_WEBHOOK_SECRET` | passo 4 |
 
 Sem `STRIPE_SECRET_KEY` o app sobe em **modo demonstração**: o checkout libera o
-acesso localmente, o que é útil para validar a experiência antes de plugar o
-pagamento.
+acesso localmente, útil para validar a experiência antes de plugar o pagamento.
 
-Depois de cadastrar as variáveis, faça um **redeploy** — variáveis novas só
-entram em um build novo.
+> Variáveis novas só entram em um build novo — faça **redeploy** depois de
+> cadastrar.
 
-## 3. Webhook do Stripe
+## 4. Webhook do Stripe
 
-1. No painel do Stripe, vá em **Developers → Webhooks → Add endpoint**.
-2. URL: `https://SEU-DOMINIO/api/stripe/webhook`.
-3. Eventos a assinar:
+1. Stripe → **Developers → Webhooks → Add endpoint**
+2. URL: `https://SEU-DOMINIO/api/stripe/webhook`
+3. Eventos:
    - `checkout.session.completed`
    - `customer.subscription.created`
    - `customer.subscription.updated`
@@ -49,30 +87,52 @@ entram em um build novo.
    - `invoice.payment_failed`
 4. Copie o *signing secret* para `STRIPE_WEBHOOK_SECRET` e faça o redeploy.
 
-Para testar localmente: `stripe listen --forward-to localhost:3000/api/stripe/webhook`.
+Para testar antes: `stripe listen --forward-to localhost:3000/api/stripe/webhook`.
 
-## 4. Domínio
+> Hoje o webhook valida a assinatura dos eventos e os registra no log. Ele é o
+> ponto de extensão para persistir o acesso quando houver banco — ver a Fase B em
+> [`PLANO-E2E.md`](PLANO-E2E.md).
+
+## 5. Domínio
 
 Em **Settings → Domains**, adicione o domínio e siga as instruções de DNS
-(registro `A` para apex ou `CNAME` para subdomínio). Assim que o domínio
-propagar, atualize `NEXT_PUBLIC_SITE_URL` para ele e faça o redeploy — o
-checkout do Stripe volta para essa URL depois do pagamento.
+(registro `A` para o apex, `CNAME` para subdomínio). Depois que propagar,
+atualize `NEXT_PUBLIC_SITE_URL` e `EMPRESA.dominio`, e faça o redeploy — é essa
+URL que o Stripe usa para trazer o cliente de volta depois do pagamento.
 
-## 5. Conferência pós-deploy
+## 6. Conferir o deploy
 
-- [ ] A home abre e o tema escuro/claro alterna
-- [ ] `/manifest.json` responde e o navegador oferece instalar o app
-- [ ] O service worker registra (DevTools → Application → Service Workers)
-- [ ] O modo avião mantém as páginas já visitadas acessíveis
-- [ ] O checkout redireciona para o Stripe (ou libera o modo demo)
-- [ ] Após pagar, `/sucesso?session_id=…` confirma e libera o conteúdo
-- [ ] O webhook aparece com entrega 200 no painel do Stripe
+```bash
+npm run verificar:deploy -- https://seu-dominio.com.br
+```
+
+O script checa, sem alterar nada:
+
+- as páginas principais e uma lição grátis
+- manifesto, ícones (incluindo maskable), service worker e página offline
+- imagem de compartilhamento, sitemap e robots
+- CSP, HSTS, X-Content-Type-Options, X-Frame-Options e Referrer-Policy
+- o endpoint de checkout, avisando se ainda está em modo demonstração
+
+Sai com código 1 se algo falhar, então serve em CI.
+
+### O que conferir na mão depois
+
+- [ ] Instalar o app pelo celular e abrir em modo avião
+- [ ] Fazer uma compra de teste com o cartão `4242 4242 4242 4242`
+- [ ] Confirmar que `/sucesso` libera o conteúdo
+- [ ] Ver a entrega 200 do webhook no painel do Stripe
+- [ ] Compartilhar o link no WhatsApp e ver o card de pré-visualização
+
+---
 
 ## Observações
 
-- `vercel.json` fixa a região das funções em `gru1` (São Paulo), reduzindo a
-  latência para o público brasileiro, e dá 30 s ao webhook.
+- `vercel.json` fixa as funções em `gru1` (São Paulo) e dá 30 s ao webhook.
 - O service worker é gerado no build pelo `next-pwa`; os arquivos gerados estão
   no `.gitignore` e no `.vercelignore` de propósito.
-- O `next.config.ts` já envia CSP, HSTS e demais cabeçalhos de segurança. Ao
-  adicionar analytics ou fontes externas, libere o domínio na CSP.
+- A imagem de compartilhamento é gerada pelo próprio Next em
+  `src/app/opengraph-image.tsx`, a partir dos pesos dos domínios — ela nunca fica
+  desatualizada.
+- Ao adicionar analytics ou fontes externas, libere o domínio na CSP em
+  `next.config.ts`.

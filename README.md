@@ -42,8 +42,19 @@ cp .env.example .env.local   # opcional: sem isso, roda em modo demonstração
 npm run dev                  # http://localhost:3000
 ```
 
-Outros comandos: `npm run build`, `npm start`, `npm run lint`,
-`npm run typecheck`.
+Antes de vender, preencha os dados do responsável legal em
+`src/content/empresa.ts` — é a fonte única dos termos de uso, da política de
+privacidade e do rodapé. Enquanto houver campo pendente, as páginas legais
+exibem um aviso de documento não finalizado.
+
+Outros comandos:
+
+| Comando | O que faz |
+| --- | --- |
+| `npm run build` / `npm start` | build de produção e servidor |
+| `npm run lint` / `npm run typecheck` | qualidade e tipos |
+| `npm run stripe:setup` | cria produto e preços recorrentes na sua conta Stripe a partir de `content/planos.ts` (aceita `-- --dry-run`) |
+| `npm run verificar:deploy -- <url>` | confere um deploy publicado: rotas, PWA, cabeçalhos de segurança e checkout |
 
 > O service worker é desativado em desenvolvimento (`next-pwa`). Para testar o
 > comportamento offline, use `npm run build && npm start`.
@@ -61,14 +72,16 @@ ambiente presentes:
 
 ### Configuração
 
-1. No painel do Stripe, crie um produto e três **preços recorrentes**
-   (mensal, trimestral e anual) em BRL.
-2. Preencha no `.env.local`:
-   - `STRIPE_SECRET_KEY`
-   - `STRIPE_PRICE_MENSAL`, `STRIPE_PRICE_TRIMESTRAL`, `STRIPE_PRICE_ANUAL`
-   - `NEXT_PUBLIC_SITE_URL` (usado nas URLs de retorno do checkout)
-3. Cadastre o webhook apontando para `/api/stripe/webhook` e preencha
+1. Coloque `STRIPE_SECRET_KEY` no `.env.local`.
+2. Rode `npm run stripe:setup` — ele cria o produto e os três preços recorrentes
+   em BRL e imprime os `STRIPE_PRICE_*` prontos para colar.
+3. Preencha também `NEXT_PUBLIC_SITE_URL` (usado nas URLs de retorno do
+   checkout).
+4. Cadastre o webhook apontando para `/api/stripe/webhook` e preencha
    `STRIPE_WEBHOOK_SECRET`.
+
+O passo a passo completo do lançamento está em
+[`docs/DEPLOY-VERCEL.md`](docs/DEPLOY-VERCEL.md).
 
 Após o pagamento, o usuário volta para `/sucesso?session_id=...`; o app
 confirma o pagamento em `/api/checkout/verificar` antes de liberar o conteúdo.
@@ -111,9 +124,10 @@ src/
     layout/                  header, footer, bottom nav, safe area
     ui/                      toast, tema, barra de progresso, markdown
   providers/                 composição de providers e tema
-  content/                   currículo, questões, planos, FAQ e lab
+  content/                   currículo, questões, planos, FAQ, lab e empresa
   lib/                       cliente Stripe (servidor)
 public/                      manifesto, ícones, página offline, SW customizado
+scripts/                     setup do Stripe e verificação de deploy
 ```
 
 Todo o conteúdo do curso vive em `src/content/` — uma seção por arquivo em
