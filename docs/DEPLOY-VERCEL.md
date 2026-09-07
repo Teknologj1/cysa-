@@ -66,7 +66,7 @@ Em **Project → Settings → Environment Variables**, para *Production* e *Prev
 
 | Variável | Valor |
 | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | URL pública do projeto, sem barra no fim |
+| `NEXT_PUBLIC_SITE_URL` | domínio **estável** do projeto, sem barra no fim (ex.: `https://cysa-tau.vercel.app`) |
 | `STRIPE_SECRET_KEY` | `sk_live_…` em produção, `sk_test_…` em preview |
 | `STRIPE_PRICE_MENSAL` | saída do passo 2 |
 | `STRIPE_PRICE_TRIMESTRAL` | saída do passo 2 |
@@ -78,6 +78,11 @@ acesso localmente, útil para validar a experiência antes de plugar o pagamento
 
 > Variáveis novas só entram em um build novo — faça **redeploy** depois de
 > cadastrar.
+
+**Não deixe `NEXT_PUBLIC_SITE_URL` em branco.** Sem ela o app cai na `VERCEL_URL`,
+que aponta para o deploy específico (`cysa-mdbqezosv-….vercel.app`) e muda a cada
+publicação. O cliente voltaria do Stripe para uma URL descartável em vez do seu
+domínio. O log de produção avisa quando isso acontece.
 
 ## 4. Webhook do Stripe
 
