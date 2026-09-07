@@ -18,7 +18,7 @@ export const EMPRESA = {
   /** CNPJ ou CPF do responsável. */
   documento: "52.513.867/0001-44",
   /** Endereço completo, exigido pelo Código de Defesa do Consumidor. */
-  endereco: "SCN Qd 2, Bloco D, Torre B, sala 403",
+  endereco: "SCN Qd 2, Bloco D, Torre B, sala 403, Brasília-DF, CEP 70712-902",
   /** E-mail de atendimento ao cliente. */
   emailContato: "contato@teknologji.com.br",
   /** E-mail do encarregado de dados (DPO), exigido pela LGPD. */
