@@ -1,24 +1,25 @@
 import type { Metadata } from "next";
-import { PLANOS, formatarBRL } from "@/content/plans";
-import { MODULOS, TOTAL_AULAS } from "@/content/curriculum";
-import { QUESTOES } from "@/content/questions";
+import { PLANOS, formatarBRL } from "@/content/planos";
+import { SECOES, TOTAL_LICOES } from "@/content/secoes";
+import { QUESTOES } from "@/content/questoes";
+import { EXAME } from "@/content/exame";
 import { FAQ } from "@/content/faq";
-import PlanCard from "@/components/PlanCard";
+import PlanoCard from "@/features/assinatura/components/PlanoCard";
 
 export const metadata: Metadata = {
   title: "Planos e assinatura",
   description:
-    "Escolha entre os planos mensal, trimestral e anual do curso preparatório CySA+ (CS0-003). Cancele quando quiser.",
+    "Escolha entre os planos mensal, trimestral e anual do curso preparatório CySA+ (CS0-004). Cancele quando quiser.",
 };
 
 const COMPARATIVO: { recurso: string; mensal: boolean; trimestral: boolean; anual: boolean }[] = [
-  { recurso: `${MODULOS.length} módulos e ${TOTAL_AULAS} aulas`, mensal: true, trimestral: true, anual: true },
+  { recurso: `${SECOES.length} seções e ${TOTAL_LICOES} lições publicadas`, mensal: true, trimestral: true, anual: true },
   { recurso: `${QUESTOES.length}+ questões comentadas`, mensal: true, trimestral: true, anual: true },
   { recurso: "Estudo offline (PWA instalável)", mensal: true, trimestral: true, anual: true },
   { recurso: "Plano de estudos de 12 semanas", mensal: false, trimestral: true, anual: true },
-  { recurso: "Simulado completo em modo prova", mensal: false, trimestral: true, anual: true },
+  { recurso: `Simulado em modo prova (${EXAME.questoes} questões ponderadas)`, mensal: false, trimestral: true, anual: true },
   { recurso: "Relatório de desempenho por domínio", mensal: false, trimestral: true, anual: true },
-  { recurso: "Laboratórios guiados", mensal: false, trimestral: false, anual: true },
+  { recurso: "Laboratórios guiados e SOC English Lab", mensal: false, trimestral: false, anual: true },
   { recurso: "Modelos de relatório profissional", mensal: false, trimestral: false, anual: true },
   { recurso: "Atualizações por 12 meses", mensal: false, trimestral: false, anual: true },
 ];
@@ -31,14 +32,14 @@ export default function PlanosPage() {
           Planos de assinatura
         </h1>
         <p className="mt-4 text-mutedFg">
-          Acesso completo ao curso preparatório do CS0-003. Sem fidelidade:
+          Acesso completo ao curso preparatório do CS0-004, incluindo as seções que entram depois. Sem fidelidade:
           cancele quando quiser e mantenha o acesso até o fim do período pago.
         </p>
       </header>
 
       <div className="mt-10 grid gap-6 md:grid-cols-3">
         {PLANOS.map((plano) => (
-          <PlanCard key={plano.id} plano={plano} />
+          <PlanoCard key={plano.id} plano={plano} />
         ))}
       </div>
 

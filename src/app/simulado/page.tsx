@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import SimuladoRunner from "@/components/SimuladoRunner";
+import SimuladoRunner from "@/features/simulado/components/SimuladoRunner";
 
 export const metadata: Metadata = {
   title: "Simulados",
   description:
-    "Simulados cronometrados do CySA+ CS0-003 com correção comentada e relatório por domínio.",
+    "Simulados cronometrados do CySA+ CS0-004 com correção comentada e relatório por domínio.",
 };
 
 export default function SimuladoPage() {

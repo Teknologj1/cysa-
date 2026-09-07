@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import ProgressoView from "@/components/ProgressoView";
+import ProgressoView from "@/features/progresso/components/ProgressoView";
 
 export const metadata: Metadata = {
   title: "Meu progresso",
   description:
-    "Acompanhe aulas concluídas, desempenho por domínio e histórico de simulados.",
+    "Acompanhe lições concluídas, desempenho por domínio e histórico de simulados.",
 };
 
 export default function ProgressoPage() {

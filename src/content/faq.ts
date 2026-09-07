@@ -4,12 +4,12 @@ export const FAQ: ItemFaq[] = [
   {
     pergunta: "O curso cobre a versão atual do exame?",
     resposta:
-      "Sim. Todo o conteúdo é organizado sobre os objetivos do CS0-003, respeitando o peso oficial de cada domínio: 33% Operações de Segurança, 30% Gestão de Vulnerabilidades, 20% Resposta a Incidentes e 17% Relatórios e Comunicação.",
+      "Sim. Todo o conteúdo é organizado sobre os objetivos do CS0-004, respeitando o peso oficial de cada domínio: 34% Operações de Segurança, 26% Gestão de Vulnerabilidades, 24% Resposta a Incidentes e 16% Relatórios e Comunicação.",
   },
   {
     pergunta: "Preciso de experiência prévia?",
     resposta:
-      "A CompTIA recomenda Security+ ou equivalente e cerca de 4 anos de experiência prática. O módulo 2 revisa os fundamentos de rede, identidade e logs para quem está vindo direto do Security+.",
+      "A CompTIA recomenda cerca de 4 anos de experiência em função de analista de SOC nível 2 ou analista de vulnerabilidades. A fase 1 do curso cobre o ambiente de operação justamente para quem ainda não tem toda essa bagagem.",
   },
   {
     pergunta: "A assinatura inclui o voucher da prova?",
@@ -34,6 +34,6 @@ export const FAQ: ItemFaq[] = [
   {
     pergunta: "Este curso é oficial da CompTIA?",
     resposta:
-      "Não. É um material independente de preparação. CompTIA, CySA+ e CS0-003 são marcas da CompTIA, sem vínculo, patrocínio ou endosso a este produto.",
+      "Não. É um material independente de preparação. CompTIA, CySA+ e CS0-004 são marcas da CompTIA, sem vínculo, patrocínio ou endosso a este produto.",
   },
 ];

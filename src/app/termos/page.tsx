@@ -19,7 +19,7 @@ export default function TermosPage() {
           <h2 className="text-base font-semibold text-foreground">1. Objeto</h2>
           <p className="mt-2">
             O CySA+ Prep é um serviço digital de assinatura que dá acesso a
-            material de preparação para a certificação CompTIA CySA+ (CS0-003),
+            material de preparação para a certificação CompTIA CySA+ (CS0-004),
             operado por [RAZÃO SOCIAL], inscrita no CNPJ [CNPJ].
           </p>
         </section>
@@ -74,7 +74,7 @@ export default function TermosPage() {
             6. Marcas de terceiros
           </h2>
           <p className="mt-2">
-            CompTIA®, CySA+® e a designação CS0-003 são marcas de titularidade da
+            CompTIA®, CySA+® e a designação CS0-004 são marcas de titularidade da
             CompTIA. Este produto é independente e não possui vínculo,
             patrocínio, endosso ou certificação oficial da CompTIA.
           </p>

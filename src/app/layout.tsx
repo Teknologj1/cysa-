@@ -1,17 +1,15 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import ThemeProvider from "@/components/ThemeProvider";
-import AppStateProvider from "@/components/AppStateProvider";
-import { ToastProvider } from "@/components/Toast";
-import SafeArea from "@/components/SafeArea";
-import Header from "@/components/Header";
-import BottomNav from "@/components/BottomNav";
-import Footer from "@/components/Footer";
-import InstallPrompt from "@/components/InstallPrompt";
+import AppProviders from "@/providers/AppProviders";
+import SafeArea from "@/components/layout/SafeArea";
+import Header from "@/components/layout/Header";
+import BottomNav from "@/components/layout/BottomNav";
+import Footer from "@/components/layout/Footer";
+import InstallPrompt from "@/features/pwa/InstallPrompt";
+import { EXAME } from "@/content/exame";
 
-const TITULO = "CySA+ Prep — Curso preparatório para o CS0-003";
-const DESCRICAO =
-  "Curso preparatório completo para a certificação CompTIA CySA+ (CS0-003): 9 módulos, laboratórios guiados e simulados cronometrados. Estude offline pelo celular.";
+const TITULO = `CySA+ Prep — Curso preparatório para o ${EXAME.codigo}`;
+const DESCRICAO = `Curso preparatório para a certificação CompTIA CySA+ (${EXAME.codigo}): lições por seção, laboratórios, simulados comentados e SOC English Lab. Estude offline pelo celular.`;
 
 export const metadata: Metadata = {
   title: { default: TITULO, template: "%s · CySA+ Prep" },
@@ -23,7 +21,7 @@ export const metadata: Metadata = {
   ),
   keywords: [
     "CySA+",
-    "CS0-003",
+    EXAME.codigo,
     "CompTIA",
     "certificação",
     "cibersegurança",
@@ -71,19 +69,15 @@ export default function RootLayout({
         <meta name="color-scheme" content="dark light" />
       </head>
       <body>
-        <ThemeProvider>
-          <ToastProvider>
-            <AppStateProvider>
-              <SafeArea>
-                <Header />
-                <main className="flex-1 pb-20 md:pb-0">{children}</main>
-                <Footer />
-                <BottomNav />
-                <InstallPrompt />
-              </SafeArea>
-            </AppStateProvider>
-          </ToastProvider>
-        </ThemeProvider>
+        <AppProviders>
+          <SafeArea>
+            <Header />
+            <main className="flex-1 pb-20 md:pb-0">{children}</main>
+            <Footer />
+            <BottomNav />
+            <InstallPrompt />
+          </SafeArea>
+        </AppProviders>
       </body>
     </html>
   );

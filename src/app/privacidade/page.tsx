@@ -34,7 +34,7 @@ export default function PrivacidadePage() {
             2. Dados guardados no seu aparelho
           </h2>
           <p className="mt-2">
-            O progresso das aulas, o histórico de simulados e a data-alvo da
+            O progresso das lições, o histórico de simulados e a data-alvo da
             prova ficam armazenados localmente no seu navegador
             (armazenamento local) e não são enviados aos nossos servidores. Você
             pode apagá-los a qualquer momento na tela de progresso.

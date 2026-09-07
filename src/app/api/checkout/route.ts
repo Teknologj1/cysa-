@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getPlano } from "@/content/plans";
+import { getPlano } from "@/content/planos";
 import { getStripe, urlDoSite } from "@/lib/stripe";
 
 export const runtime = "nodejs";

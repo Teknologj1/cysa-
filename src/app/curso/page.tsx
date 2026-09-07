@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import CursoLista from "@/components/CursoLista";
+import CursoLista from "@/features/curso/components/CursoLista";
 
 export const metadata: Metadata = {
-  title: "Curso CS0-003",
+  title: "Curso CS0-004",
   description:
-    "Todos os módulos do curso preparatório CySA+ com acompanhamento de progresso.",
+    "Todas as seções do curso preparatório CySA+ com acompanhamento de progresso.",
 };
 
 export default function CursoPage() {

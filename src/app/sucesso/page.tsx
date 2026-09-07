@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import SucessoView from "@/components/SucessoView";
+import SucessoView from "@/features/assinatura/components/SucessoView";
 
 export const metadata: Metadata = {
   title: "Assinatura confirmada",

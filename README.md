@@ -1,8 +1,8 @@
-# CySA+ Prep — PWA de assinatura do curso preparatório CS0-003
+# CySA+ Prep — PWA de assinatura do curso preparatório CS0-004
 
 Aplicativo web progressivo (PWA) para **vender a assinatura** e **entregar o
 conteúdo** de um curso preparatório para a certificação CompTIA CySA+
-(exame CS0-003).
+(exame CS0-004, que sucede o CS0-003).
 
 A base técnica segue o mesmo modelo do projeto `my-motogp-pwa`: Next.js 15
 (App Router) + Tailwind CSS v4 + `next-pwa` + `next-themes`, com service worker
@@ -11,18 +11,22 @@ customizado, página offline, manifesto instalável e headers de segurança.
 ## O que já está pronto
 
 **Vitrine e conversão**
-- Landing page com proposta de valor, pesos dos 4 domínios do exame, ementa
-  completa, comparativo de planos e FAQ.
+- Landing page com proposta de valor, pesos dos 4 domínios do exame, estrutura
+  em quatro fases, comparativo de planos e FAQ.
 - Três planos de assinatura (mensal, trimestral e anual) com checkout.
 - Páginas de termos de uso e privacidade (modelos a revisar juridicamente).
 
 **Área do aluno**
-- 9 módulos e 44 aulas mapeadas aos domínios oficiais (33% / 30% / 20% / 17%).
-- Marcação de aulas concluídas e progresso por módulo e por domínio.
-- Simulados com filtro por domínio, cronômetro, correção comentada e
-  relatório de desempenho.
+- Curso organizado em fases → seções → lições, com a tag do objetivo oficial
+  (OBJ 1.5, OBJ 4.2) em cada lição.
+- Páginas de lição com conteúdo em Markdown, pontos-chave, dica de prova e
+  tarefa prática; marcação de conclusão e avanço para a próxima.
+- Simulados por domínio, por seção (checkpoint) e em modo prova, este último
+  sorteando as questões pelos pesos oficiais (34% / 26% / 24% / 16%).
+- Relatório de desempenho por domínio com sugestão de foco ponderada pelo peso.
+- SOC English Lab: listening com síntese de voz e treino de pronúncia.
 - Data-alvo da prova com contagem regressiva e histórico de tentativas.
-- Amostra grátis: aulas e questões liberadas sem assinatura, para conversão.
+- Amostra grátis: lições e questões liberadas sem assinatura, para conversão.
 
 **PWA**
 - Instalável (Android, iOS e desktop) com convite de instalação próprio.
@@ -80,30 +84,52 @@ está pronto para receber os eventos do ciclo de vida da assinatura.
 
 ## Estrutura
 
+O código é organizado por **feature**: cada área do produto é dona dos seus
+componentes, do seu estado e da sua lógica.
+
 ```
 src/
-  app/
+  app/                       rotas finas — só compõem as features
     page.tsx                 landing de vendas
     planos/                  planos e comparativo
-    curso/                   lista de módulos
-    curso/[moduloId]/        aulas do módulo
+    curso/                   fases e seções
+    curso/[secaoId]/         lições da seção
+    curso/[secaoId]/[licaoId]/  a lição
     simulado/                simulados e correção
-    progresso/               progresso e histórico
-    conta/                   status da assinatura
-    sucesso/                 retorno do checkout
+    lab-ingles/              SOC English Lab
+    progresso/  conta/  sucesso/  termos/  privacidade/
     api/checkout/            criação e verificação da sessão Stripe
     api/stripe/webhook/      webhook de assinaturas
-  components/                UI, PWA, estado e paywall
-  content/                   currículo, planos, questões e FAQ
-  lib/                       assinatura, progresso e cliente Stripe
+  features/
+    assinatura/              provider, checkout, paywall, conta
+    curso/                   lista, seção, lição e navegação
+    simulado/                execução, sorteio e resultado
+    progresso/               provider, relatório e histórico
+    lab-ingles/              listening e pronúncia
+    pwa/                     convite de instalação
+  components/
+    layout/                  header, footer, bottom nav, safe area
+    ui/                      toast, tema, barra de progresso, markdown
+  providers/                 composição de providers e tema
+  content/                   currículo, questões, planos, FAQ e lab
+  lib/                       cliente Stripe (servidor)
 public/                      manifesto, ícones, página offline, SW customizado
 ```
 
-Todo o conteúdo do curso vive em `src/content/` — currículo em
-`curriculum.ts`, banco de questões em `questions.ts`, planos e preços em
-`plans.ts`.
+Todo o conteúdo do curso vive em `src/content/` — uma seção por arquivo em
+`secoes/`, questões em `questoes/`, planos e preços em `planos.ts`. O guia para
+adicionar conteúdo está em [`docs/CONTEUDO.md`](docs/CONTEUDO.md).
+
+## Documentação
+
+- [`docs/PLANO-E2E.md`](docs/PLANO-E2E.md) — o funil da landing até o checkpoint,
+  o que já funciona e o que falta para produção
+- [`docs/DEPLOY-VERCEL.md`](docs/DEPLOY-VERCEL.md) — deploy, variáveis de
+  ambiente, webhook e domínio
+- [`docs/CONTEUDO.md`](docs/CONTEUDO.md) — como enviar e publicar o conteúdo de
+  cada seção e lição
 
 ## Aviso de marcas
 
-CompTIA®, CySA+® e a designação CS0-003 são marcas da CompTIA. Este projeto é
+CompTIA®, CySA+® e a designação CS0-004 são marcas da CompTIA. Este projeto é
 independente e não possui vínculo, patrocínio ou endosso da CompTIA.

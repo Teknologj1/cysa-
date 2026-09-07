@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import ContaView from "@/components/ContaView";
+import ContaView from "@/features/assinatura/components/ContaView";
 
 export const metadata: Metadata = {
   title: "Minha conta",
