@@ -53,6 +53,7 @@ Outros comandos:
 | --- | --- |
 | `npm run build` / `npm start` | build de produção e servidor |
 | `npm run lint` / `npm run typecheck` | qualidade e tipos |
+| `npm test` | testes da decisão de acesso ao conteúdo pago |
 | `npm run stripe:setup` | cria produto e preços recorrentes na sua conta Stripe a partir de `content/planos.ts` (aceita `-- --dry-run`) |
 | `npm run verificar:deploy -- <url>` | confere um deploy publicado: rotas, PWA, cabeçalhos de segurança e checkout |
 
@@ -86,14 +87,16 @@ O passo a passo completo do lançamento está em
 Após o pagamento, o usuário volta para `/sucesso?session_id=...`; o app
 confirma o pagamento em `/api/checkout/verificar` antes de liberar o conteúdo.
 
-### Limite conhecido desta versão
+## Contas e direito de acesso
 
-Não há backend de contas: o acesso liberado após o pagamento é gravado **no
-aparelho** (armazenamento local do navegador), então não acompanha o aluno
-entre dispositivos e não é uma barreira de segurança. O caminho natural de
-evolução é adicionar autenticação e persistir a assinatura no banco, usando o
-webhook do Stripe (`/api/stripe/webhook`) como fonte da verdade — o handler já
-está pronto para receber os eventos do ciclo de vida da assinatura.
+Com o Supabase configurado, a assinatura é gravada no Postgres pelo webhook do
+Stripe, o aluno entra por link mágico com o e-mail da compra e **a decisão de
+acesso acontece no servidor**: o corpo da lição paga não é renderizado nem
+enviado a quem não tem direito.
+
+Sem as variáveis do Supabase, o app funciona como antes, com a assinatura
+registrada no próprio aparelho. Passo a passo em
+[`docs/CONTAS-SUPABASE.md`](docs/CONTAS-SUPABASE.md).
 
 ## Estrutura
 
@@ -124,10 +127,14 @@ src/
     layout/                  header, footer, bottom nav, safe area
     ui/                      toast, tema, barra de progresso, markdown
   providers/                 composição de providers e tema
+  server/                    só roda no servidor
+    auth/                    sessão, usuário e direito de acesso
+    db/                      cliente Supabase e repositório de assinaturas
   content/                   currículo, questões, planos, FAQ, lab e empresa
   lib/                       cliente Stripe (servidor)
 public/                      manifesto, ícones, página offline, SW customizado
 scripts/                     setup do Stripe e verificação de deploy
+supabase/migrations/         schema versionado do banco
 ```
 
 Todo o conteúdo do curso vive em `src/content/` — uma seção por arquivo em
@@ -140,6 +147,8 @@ adicionar conteúdo está em [`docs/CONTEUDO.md`](docs/CONTEUDO.md).
   o que já funciona e o que falta para produção
 - [`docs/DEPLOY-VERCEL.md`](docs/DEPLOY-VERCEL.md) — deploy, variáveis de
   ambiente, webhook e domínio
+- [`docs/CONTAS-SUPABASE.md`](docs/CONTAS-SUPABASE.md) — contas, assinatura no
+  banco e verificação de acesso no servidor
 - [`docs/CONTEUDO.md`](docs/CONTEUDO.md) — como enviar e publicar o conteúdo de
   cada seção e lição
 

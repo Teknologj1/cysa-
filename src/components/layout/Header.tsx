@@ -15,7 +15,7 @@ const LINKS = [
 
 export default function Header() {
   const pathname = usePathname();
-  const { ativa, pronto } = useAssinatura();
+  const { ativa, pronto, contasAtivas, logado } = useAssinatura();
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
@@ -59,12 +59,22 @@ export default function Header() {
               Assinatura ativa
             </Link>
           ) : (
-            <Link
-              href="/planos"
-              className="rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primaryFg transition hover:opacity-90"
-            >
-              Assinar
-            </Link>
+            <>
+              {contasAtivas && !logado && (
+                <Link
+                  href="/entrar"
+                  className="rounded-lg px-3 py-1.5 text-sm text-mutedFg transition hover:text-foreground"
+                >
+                  Entrar
+                </Link>
+              )}
+              <Link
+                href="/planos"
+                className="rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primaryFg transition hover:opacity-90"
+              >
+                Assinar
+              </Link>
+            </>
           )}
         </div>
       </div>

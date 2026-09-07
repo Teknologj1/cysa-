@@ -9,10 +9,20 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-/* Nunca cachear as rotas de pagamento: elas precisam da rede. */
+/* Pagamento, sessão e autenticação sempre vão à rede: cache aqui produziria
+   estado de acesso desatualizado. */
+const SEMPRE_NA_REDE = [
+  "/api/checkout",
+  "/api/stripe",
+  "/api/sessao",
+  "/api/portal",
+  "/auth/",
+  "/entrar",
+];
+
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
-  if (url.pathname.startsWith("/api/checkout") || url.pathname.startsWith("/api/stripe")) {
+  if (SEMPRE_NA_REDE.some((prefixo) => url.pathname.startsWith(prefixo))) {
     event.respondWith(fetch(event.request));
   }
 });

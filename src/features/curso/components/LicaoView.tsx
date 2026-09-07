@@ -8,19 +8,40 @@ import type { Licao, Secao } from "@/content/types";
 import { useProgresso } from "@/features/progresso/ProgressoProvider";
 import { useAssinatura } from "@/features/assinatura/AssinaturaProvider";
 import PaywallGate from "@/features/assinatura/components/PaywallGate";
+import { podeVerConteudo } from "@/lib/acesso";
+
+export type AcessoDaLicao = {
+  /** true quando já existem contas de verdade (Supabase configurado). */
+  contasAtivas: boolean;
+  liberado: boolean;
+  logado: boolean;
+};
 
 export default function LicaoView({
   secao,
   licao,
+  acesso,
   conteudo,
 }: {
   secao: Secao;
   licao: Licao;
+  acesso: AcessoDaLicao;
   /** Markdown já renderizado no servidor (Server Component). */
   conteudo?: React.ReactNode;
 }) {
   const { progresso, alternarLicao, marcarLicao } = useProgresso();
   const { ativa, pronto } = useAssinatura();
+
+  /**
+   * Com contas ativas, quem decide é o servidor — o cliente apenas reflete.
+   * Sem elas, vale o estado local, como antes.
+   */
+  const podeVer = podeVerConteudo({
+    contasAtivas: acesso.contasAtivas,
+    gratis: Boolean(licao.gratis),
+    // Sem contas de verdade, o estado local ainda é o que temos.
+    liberado: acesso.contasAtivas ? acesso.liberado : pronto && ativa,
+  });
   const router = useRouter();
 
   const feita = progresso.licoesConcluidas.includes(licao.id);
@@ -76,7 +97,8 @@ export default function LicaoView({
 
       <div className="mt-8">
         <PaywallGate
-          liberado={Boolean(licao.gratis)}
+          liberado={podeVer}
+          mostrarEntrar={acesso.contasAtivas && !acesso.logado}
           titulo="Esta lição é para assinantes"
           descricao="Assine para liberar todas as lições, laboratórios e checkpoints do CS0-004."
         >
@@ -161,7 +183,7 @@ export default function LicaoView({
           )}
 
           {/* Conclusão e avanço */}
-          {pronto && (Boolean(licao.gratis) || ativa) && (
+          {pronto && podeVer && (
             <div className="mt-8 flex flex-col gap-3 border-t border-border pt-6 sm:flex-row">
               <button
                 type="button"

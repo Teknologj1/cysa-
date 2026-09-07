@@ -19,11 +19,22 @@ import {
   salvarAssinatura,
 } from "./lib/assinatura";
 
+type SessaoServidor = {
+  contasAtivas: boolean;
+  logado: boolean;
+  email: string | null;
+  liberado: boolean;
+};
+
 type EstadoAssinatura = {
   /** false até a primeira leitura no cliente (evita flash de paywall). */
   pronto: boolean;
   assinatura: Assinatura;
   ativa: boolean;
+  /** true quando o app já tem contas de verdade (Supabase configurado). */
+  contasAtivas: boolean;
+  logado: boolean;
+  email: string | null;
   ativar: (
     planoId: PlanId,
     origem: OrigemAssinatura,
@@ -50,6 +61,7 @@ export default function AssinaturaProvider({
 }) {
   const [pronto, setPronto] = useState(false);
   const [assinatura, setAssinatura] = useState<Assinatura>(SEM_ASSINATURA);
+  const [sessao, setSessao] = useState<SessaoServidor | null>(null);
 
   useEffect(() => {
     const sincronizar = () => setAssinatura(lerAssinatura());
@@ -61,6 +73,27 @@ export default function AssinaturaProvider({
     return () => {
       window.removeEventListener("cysa:assinatura-alterada", sincronizar);
       window.removeEventListener("storage", sincronizar);
+    };
+  }, []);
+
+  // Quando existem contas de verdade, quem manda é o servidor. O estado local
+  // continua valendo apenas enquanto essa infraestrutura não está configurada.
+  useEffect(() => {
+    let cancelado = false;
+
+    (async () => {
+      try {
+        const resposta = await fetch("/api/sessao", { cache: "no-store" });
+        if (!resposta.ok) return;
+        const dado = (await resposta.json()) as SessaoServidor;
+        if (!cancelado) setSessao(dado);
+      } catch {
+        // Offline ou endpoint indisponível: seguimos com o estado local.
+      }
+    })();
+
+    return () => {
+      cancelado = true;
     };
   }, []);
 
@@ -83,16 +116,20 @@ export default function AssinaturaProvider({
     setAssinatura(SEM_ASSINATURA);
   }, []);
 
-  const valor = useMemo<EstadoAssinatura>(
-    () => ({
+  const valor = useMemo<EstadoAssinatura>(() => {
+    const comContas = sessao?.contasAtivas ?? false;
+
+    return {
       pronto,
       assinatura,
-      ativa: pronto && assinatura.ativa,
+      ativa: comContas ? sessao!.liberado : pronto && assinatura.ativa,
+      contasAtivas: comContas,
+      logado: sessao?.logado ?? false,
+      email: sessao?.email ?? assinatura.email,
       ativar,
       remover,
-    }),
-    [pronto, assinatura, ativar, remover]
-  );
+    };
+  }, [pronto, assinatura, sessao, ativar, remover]);
 
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>;
 }

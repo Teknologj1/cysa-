@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getPlano } from "@/content/planos";
 import { getStripe, urlDoSite } from "@/lib/stripe";
+import { usuarioAtual } from "@/server/auth/sessao";
 
 export const runtime = "nodejs";
 
@@ -22,13 +23,18 @@ export async function POST(request: Request) {
   const stripe = getStripe();
   const priceId = process.env[plano.stripePriceEnv];
 
+  // Se a pessoa já está logada, o checkout usa o e-mail da conta: a compra
+  // nasce ligada a ela, sem depender de digitar o mesmo endereço de novo.
+  const usuario = await usuarioAtual();
+  const email = usuario?.email || corpo.email || undefined;
+
   // 1) Caminho preferido: Checkout Session criada no servidor.
   if (stripe && priceId) {
     try {
       const sessao = await stripe.checkout.sessions.create({
         mode: "subscription",
         line_items: [{ price: priceId, quantity: 1 }],
-        customer_email: corpo.email || undefined,
+        customer_email: email,
         allow_promotion_codes: true,
         locale: "pt-BR",
         success_url: `${urlDoSite()}/sucesso?session_id={CHECKOUT_SESSION_ID}`,

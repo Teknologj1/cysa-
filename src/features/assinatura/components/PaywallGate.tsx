@@ -10,11 +10,14 @@ import { useAssinatura } from "../AssinaturaProvider";
 export default function PaywallGate({
   children,
   liberado = false,
+  mostrarEntrar = false,
   titulo = "Conteúdo exclusivo para assinantes",
   descricao = "Assine para desbloquear todas as seções, laboratórios e simulados do CS0-004.",
 }: {
   children: React.ReactNode;
   liberado?: boolean;
+  /** Oferece o login para quem já comprou e está apenas deslogado. */
+  mostrarEntrar?: boolean;
   titulo?: string;
   descricao?: string;
 }) {
@@ -47,12 +50,21 @@ export default function PaywallGate({
         >
           Ver planos
         </Link>
-        <Link
-          href="/simulado"
-          className="rounded-xl border border-border px-5 py-2.5 text-sm font-medium transition hover:bg-muted"
-        >
-          Testar questões grátis
-        </Link>
+        {mostrarEntrar ? (
+          <Link
+            href="/entrar"
+            className="rounded-xl border border-border px-5 py-2.5 text-sm font-medium transition hover:bg-muted"
+          >
+            Já assinei — entrar
+          </Link>
+        ) : (
+          <Link
+            href="/simulado"
+            className="rounded-xl border border-border px-5 py-2.5 text-sm font-medium transition hover:bg-muted"
+          >
+            Testar questões grátis
+          </Link>
+        )}
       </div>
     </div>
   );
