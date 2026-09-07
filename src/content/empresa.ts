@@ -9,20 +9,18 @@
 
 export const EMPRESA = {
   /** Nome comercial exibido no app. */
-  nomeFantasia: "CySA+ Prep",
+  nomeFantasia: "Teknologji",
   /** Razão social do responsável pelo serviço. */
-  razaoSocial: "[RAZÃO SOCIAL]",
+  razaoSocial: "Teknologji LTDA",
   /** CNPJ ou CPF do responsável. */
-  documento: "[CNPJ]",
+  documento: "52.513.867-0001/44",
   /** Endereço completo, exigido pelo Código de Defesa do Consumidor. */
-  endereco: "[ENDEREÇO COMPLETO]",
+  endereco: "SCN Qd 2, Bloco D, Torre B, sala 403",
   /** E-mail de atendimento ao cliente. */
-  emailContato: "[E-MAIL DE CONTATO]",
+  emailContato: "contato@teknologji.com.br",
   /** E-mail do encarregado de dados (DPO), exigido pela LGPD. */
-  emailEncarregado: "[E-MAIL DO ENCARREGADO]",
-  /** Domínio público do serviço, sem protocolo. */
-  dominio: "[SEU-DOMINIO.COM.BR]",
-} as const;
+  emailEncarregado: "contato@teknologji.com.br",
+  } as const;
 
 /** Campos ainda não preenchidos. Vazio significa documentação pronta. */
 export const CAMPOS_PENDENTES = Object.entries(EMPRESA)
