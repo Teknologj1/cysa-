@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { EMPRESA, dataLegalFormatada } from "@/content/empresa";
+import { EMPRESA, NOME_PRODUTO, dataLegalFormatada } from "@/content/empresa";
 import { EXAME } from "@/content/exame";
 import { PLANOS, formatarBRL } from "@/content/planos";
 import AvisoDocumentoIncompleto from "@/components/ui/AvisoDocumentoIncompleto";
 
 export const metadata: Metadata = {
   title: "Termos de uso",
-  description: `Condições de uso e de assinatura do ${EMPRESA.nomeFantasia}.`,
+  description: `Condições de uso e de assinatura do ${NOME_PRODUTO}.`,
 };
 
 export default function TermosPage() {
@@ -23,7 +23,7 @@ export default function TermosPage() {
         <section>
           <h2 className="text-base font-semibold text-foreground">1. Quem somos</h2>
           <p className="mt-2">
-            O {EMPRESA.nomeFantasia} é um serviço digital de assinatura que dá
+            O {NOME_PRODUTO} é um serviço digital de assinatura que dá
             acesso a material de preparação para a certificação CompTIA CySA+
             (exame {EXAME.codigo}), operado por {EMPRESA.razaoSocial}, inscrita
             sob o nº {EMPRESA.documento}, com sede em {EMPRESA.endereco}.

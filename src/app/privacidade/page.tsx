@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { EMPRESA, dataLegalFormatada } from "@/content/empresa";
+import { EMPRESA, NOME_PRODUTO, dataLegalFormatada } from "@/content/empresa";
 import AvisoDocumentoIncompleto from "@/components/ui/AvisoDocumentoIncompleto";
 
 export const metadata: Metadata = {
   title: "Política de privacidade",
-  description: `Como o ${EMPRESA.nomeFantasia} trata os seus dados pessoais.`,
+  description: `Como o ${NOME_PRODUTO} trata os seus dados pessoais.`,
 };
 
 export default function PrivacidadePage() {

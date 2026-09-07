@@ -13,16 +13,20 @@ Edite **`src/content/empresa.ts`** — é a fonte única usada pelos termos de u
 pela política de privacidade e pelo rodapé:
 
 ```ts
+export const NOME_PRODUTO = "CySA+ Prep";   // nome exibido no app
+
 export const EMPRESA = {
-  nomeFantasia: "CySA+ Prep",
+  nomeFantasia: "…",         // nome fantasia da empresa
   razaoSocial: "…",          // razão social ou seu nome completo
   documento: "…",            // CNPJ ou CPF
   endereco: "…",             // endereço completo (exigido pelo CDC)
   emailContato: "…",         // atendimento ao cliente
   emailEncarregado: "…",     // encarregado de dados (LGPD)
-  dominio: "…",              // domínio público, sem https://
 } as const;
 ```
+
+O domínio público não fica aqui: ele vem de `NEXT_PUBLIC_SITE_URL`, para não
+haver dois lugares dizendo onde o app está publicado.
 
 Enquanto houver campo com `[COLCHETES]`, as páginas legais exibem um aviso de
 documento não finalizado — de propósito, para nenhum contrato ir ao ar
@@ -97,7 +101,7 @@ Para testar antes: `stripe listen --forward-to localhost:3000/api/stripe/webhook
 
 Em **Settings → Domains**, adicione o domínio e siga as instruções de DNS
 (registro `A` para o apex, `CNAME` para subdomínio). Depois que propagar,
-atualize `NEXT_PUBLIC_SITE_URL` e `EMPRESA.dominio`, e faça o redeploy — é essa
+atualize `NEXT_PUBLIC_SITE_URL` e faça o redeploy — é essa
 URL que o Stripe usa para trazer o cliente de volta depois do pagamento.
 
 ## 6. Conferir o deploy

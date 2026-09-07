@@ -1,9 +1,9 @@
 import { ImageResponse } from "next/og";
 import { DOMINIOS } from "@/content/dominios";
 import { EXAME } from "@/content/exame";
-import { EMPRESA } from "@/content/empresa";
+import { NOME_PRODUTO } from "@/content/empresa";
 
-export const alt = `${EMPRESA.nomeFantasia} — curso preparatório para o ${EXAME.codigo}`;
+export const alt = `${NOME_PRODUTO} — curso preparatório para o ${EXAME.codigo}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -46,7 +46,7 @@ export default function OpenGraphImage() {
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
             <span style={{ fontSize: 28, fontWeight: 600 }}>
-              {EMPRESA.nomeFantasia}
+              {NOME_PRODUTO}
             </span>
             <span style={{ fontSize: 18, color: "#94a3b8" }}>
               CompTIA CySA+ · exame {EXAME.codigo}
