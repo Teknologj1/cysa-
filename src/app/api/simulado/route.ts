@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { acessoDoUsuario } from "@/server/auth/sessao";
+import { diasDeAssinatura } from "@/lib/liberacao";
 import { EXAME } from "@/content/exame";
 import type { DominioId } from "@/content/types";
 import type { FiltroSimulado } from "@/features/simulado/lib/simulado";
@@ -9,7 +10,25 @@ import {
   paraQuestaoDoSimulado,
   questoesDisponiveis,
   sortearQuestoes,
+  type EstadoDoAluno,
 } from "@/server/simulado/selecao";
+import type { AcessoDoUsuario } from "@/server/auth/sessao";
+
+/**
+ * Sem contas configuradas o app volta ao modo anterior e tudo fica disponível
+ * — inclusive as seções em carência, já que não há assinatura para datar.
+ */
+function estadoDoAluno(acesso: AcessoDoUsuario): EstadoDoAluno {
+  if (!acesso.contasAtivas) {
+    return { assinante: true, diasDecorridos: null, cortesia: true };
+  }
+
+  return {
+    assinante: acesso.liberado,
+    diasDecorridos: diasDeAssinatura(acesso.assinatura?.criadaEm ?? null),
+    cortesia: acesso.cortesia,
+  };
+}
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -37,7 +56,8 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const acesso = await acessoDoUsuario();
 
-  const assinante = acesso.contasAtivas ? acesso.liberado : true;
+  const estado = estadoDoAluno(acesso);
+  const assinante = estado.assinante;
   const filtro = lerFiltro(searchParams);
 
   const quantidadePedida = Number(searchParams.get("quantidade"));
@@ -51,7 +71,7 @@ export async function GET(request: Request) {
           QUANTIDADE_MAXIMA
         );
 
-  const elegiveis = aplicarFiltro(questoesDisponiveis(assinante), filtro);
+  const elegiveis = aplicarFiltro(questoesDisponiveis(estado), filtro);
   const sorteadas = sortearQuestoes(elegiveis, filtro, quantidade);
 
   return NextResponse.json(
@@ -68,7 +88,8 @@ export async function GET(request: Request) {
 /** Quantas questões existem para cada filtro, para montar a tela de escolha. */
 export async function POST(request: Request) {
   const acesso = await acessoDoUsuario();
-  const assinante = acesso.contasAtivas ? acesso.liberado : true;
+  const estado = estadoDoAluno(acesso);
+  const assinante = estado.assinante;
 
   let filtros: FiltroSimulado[] = [];
   try {
@@ -80,6 +101,6 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     assinante,
-    contagens: filtros.map((filtro) => contarDisponiveis(assinante, filtro)),
+    contagens: filtros.map((filtro) => contarDisponiveis(estado, filtro)),
   });
 }

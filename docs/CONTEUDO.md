@@ -113,6 +113,40 @@ Na interface, use `@/content/catalogo` — metadados gerados no build. Conteúdo
 pago vem do servidor, por props ou por rota de API. O `npm run verificar:bundle`
 roda depois de todo build e falha se isso escapar.
 
+## Liberação progressiva
+
+Nos primeiros 7 dias de assinatura o aluno estuda **apenas as seções 1 e 2**. A
+partir do 8º dia todas as demais abrem de uma vez.
+
+No código isso é o campo `diasParaLiberar` da seção:
+
+| Valor | Efeito |
+| --- | --- |
+| `0` | abre no primeiro dia (é o caso de s01 e s02) |
+| omitido | abre depois de `DIAS_DE_CARENCIA` = 7 dias completos |
+
+**Uma seção nova não precisa declarar nada** — a ausência do campo já significa
+carência. Isso é proposital: o esquecimento erra para o lado seguro, fechando a
+seção, em vez de liberar conteúdo antes da hora.
+
+O relógio começa na criação da assinatura no Stripe (`criadaEm`), que já é a
+fonte da verdade do acesso. Dia da compra = 0 dias completos; o 8º dia de acesso
+são 7 dias completos.
+
+Três coisas que a regra **não** afeta:
+
+- **Lições e questões `gratis`** continuam visíveis a qualquer um. Assinante
+  nunca pode ver menos que um visitante.
+- **Acesso de cortesia** entra sem carência — é para equipe e revisão.
+- **Ambiente sem contas** (`contasAtivas` falso) continua abrindo tudo: não há
+  assinatura para datar.
+
+A regra é aplicada no servidor em dois lugares, e os dois importam:
+`src/app/curso/[secaoId]/[licaoId]/page.tsx` (que decide se o corpo da lição
+chega a sair) e `src/server/simulado/selecao.ts` (sem o qual o checkpoint de uma
+seção fechada devolveria gabarito pela API). `scripts/verificar-conteudo.mts`
+confere os dois contra o conteúdo real e falha o build se a carência furar.
+
 ## Depois de adicionar conteúdo
 
 ```bash

@@ -6,6 +6,8 @@ export const s02: Secao = {
   titulo: "Fundamentos de operações de segurança",
   fase: "f1",
   dominio: "d1",
+  // Fundamentos: abrem no primeiro dia de assinatura.
+  diasParaLiberar: 0,
   descricao:
     "O que é um SOC, quem trabalha nele, como o trabalho flui da detecção à resolução e o que precisa ser monitorado o tempo todo.",
   objetivos: [

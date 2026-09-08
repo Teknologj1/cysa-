@@ -1,5 +1,11 @@
 import { QUESTOES, embaralhar } from "@/content/questoes";
 import { distribuirPorPeso } from "@/content/dominios";
+import { SECOES } from "@/content/secoes";
+import {
+  diasParaLiberarSecao,
+  secaoLiberada,
+  type ContextoDeLiberacao,
+} from "@/lib/liberacao";
 import type { DominioId, Questao } from "@/content/types";
 import type {
   FiltroSimulado,
@@ -13,8 +19,42 @@ import type {
  * ele não pode viajar para o navegador de quem não assinou.
  */
 
-export function questoesDisponiveis(assinante: boolean): Questao[] {
-  return assinante ? QUESTOES : QUESTOES.filter((q) => q.gratis);
+export type EstadoDoAluno = {
+  assinante: boolean;
+  /** Dias completos de assinatura; null sem assinatura. */
+  diasDecorridos: number | null;
+  cortesia: boolean;
+};
+
+/**
+ * Seções ainda fechadas para este aluno. Sem isto, o checkpoint de uma seção
+ * em carência entregaria pela API o conteúdo que a página nega.
+ */
+function secoesFechadas(estado: EstadoDoAluno): Set<string> {
+  const fechadas = new Set<string>();
+
+  for (const secao of SECOES) {
+    const contexto: ContextoDeLiberacao = {
+      diasParaLiberar: diasParaLiberarSecao(secao),
+      diasDecorridos: estado.diasDecorridos,
+      cortesia: estado.cortesia,
+    };
+    if (!secaoLiberada(contexto)) fechadas.add(secao.id);
+  }
+
+  return fechadas;
+}
+
+export function questoesDisponiveis(estado: EstadoDoAluno): Questao[] {
+  const base = estado.assinante ? QUESTOES : QUESTOES.filter((q) => q.gratis);
+
+  const fechadas = secoesFechadas(estado);
+  if (fechadas.size === 0) return base;
+
+  // A amostra grátis continua valendo: assinante não vê menos que visitante.
+  return base.filter(
+    (q) => q.gratis || !q.secaoId || !fechadas.has(q.secaoId)
+  );
 }
 
 export function aplicarFiltro(
@@ -82,8 +122,8 @@ export function paraQuestaoDoSimulado(questao: Questao): QuestaoDoSimulado {
 
 /** Quantas questões o filtro tem disponíveis para este aluno. */
 export function contarDisponiveis(
-  assinante: boolean,
+  estado: EstadoDoAluno,
   filtro: FiltroSimulado
 ): number {
-  return aplicarFiltro(questoesDisponiveis(assinante), filtro).length;
+  return aplicarFiltro(questoesDisponiveis(estado), filtro).length;
 }

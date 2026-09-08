@@ -40,6 +40,7 @@ const secoes = SECOES.map((secao) => ({
   dominio: secao.dominio,
   descricao: secao.descricao,
   objetivos: secao.objetivos,
+  diasParaLiberar: secao.diasParaLiberar,
   licoes: secao.licoes.map(licaoPublica),
 }));
 

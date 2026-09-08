@@ -24,6 +24,8 @@ export async function GET() {
             planoId: acesso.assinatura.planoId,
             status: acesso.assinatura.status,
             periodoFim: acesso.assinatura.periodoFim,
+            // Início da carência de liberação das seções.
+            criadaEm: acesso.assinatura.criadaEm,
           }
         : null,
     },

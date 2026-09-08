@@ -8,6 +8,8 @@
  */
 import { SECOES, TOTAL_LICOES, TOTAL_MINUTOS } from "@/content/secoes";
 import { QUESTOES } from "@/content/questoes";
+import { questoesDisponiveis } from "@/server/simulado/selecao";
+import { DIAS_DE_CARENCIA, diasParaLiberarSecao } from "@/lib/liberacao";
 
 const problemas: string[] = [];
 
@@ -53,6 +55,59 @@ for (const secao of SECOES) {
   }
 }
 
+/**
+ * A carência de liberação é regra de negócio com dinheiro em jogo, e a API do
+ * simulado devolve gabarito em JSON. Vale conferir o gate contra o conteúdo
+ * real, para uma seção nova não vazar por esquecimento de um campo.
+ */
+const pagasEmCarencia = (dias: number) =>
+  questoesDisponiveis({ assinante: true, diasDecorridos: dias, cortesia: false })
+    .filter((q) => !q.gratis)
+    .filter((q) => {
+      const secao = SECOES.find((s) => s.id === q.secaoId);
+      return secao ? diasParaLiberarSecao(secao) > dias : false;
+    });
+
+for (const dia of [0, DIAS_DE_CARENCIA - 1]) {
+  const vazadas = pagasEmCarencia(dia);
+  if (vazadas.length > 0) {
+    problemas.push(
+      `carência furada no dia ${dia}: ${vazadas.length} questões pagas de seção fechada ` +
+        `(${[...new Set(vazadas.map((q) => q.secaoId))].join(", ")})`
+    );
+  }
+}
+
+// E o inverso: passada a carência, tudo precisa abrir.
+const noOitavoDia = questoesDisponiveis({
+  assinante: true,
+  diasDecorridos: DIAS_DE_CARENCIA,
+  cortesia: false,
+});
+if (noOitavoDia.length !== QUESTOES.length) {
+  problemas.push(
+    `após a carência deveriam abrir as ${QUESTOES.length} questões, mas abriram ${noOitavoDia.length}`
+  );
+}
+
+// Assinante em carência nunca pode ver menos que um visitante.
+const doVisitante = questoesDisponiveis({
+  assinante: false,
+  diasDecorridos: null,
+  cortesia: false,
+});
+const noPrimeiroDia = new Set(
+  questoesDisponiveis({ assinante: true, diasDecorridos: 0, cortesia: false }).map(
+    (q) => q.id
+  )
+);
+const perdidas = doVisitante.filter((q) => !noPrimeiroDia.has(q.id));
+if (perdidas.length > 0) {
+  problemas.push(
+    `assinante no dia 1 vê menos que visitante: ${perdidas.map((q) => q.id).join(", ")}`
+  );
+}
+
 if (problemas.length > 0) {
   console.error("\n✕ PROBLEMAS NO CONTEÚDO\n");
   for (const problema of problemas) console.error(`  • ${problema}`);
@@ -61,7 +116,13 @@ if (problemas.length > 0) {
 }
 
 const gratis = SECOES.flatMap((s) => s.licoes).filter((l) => l.gratis).length;
+const naEntrada = SECOES.filter((s) => diasParaLiberarSecao(s) === 0);
+
 console.log(
   `✓ conteúdo íntegro: ${SECOES.length} seções, ${TOTAL_LICOES} lições ` +
     `(${gratis} grátis), ${Math.round(TOTAL_MINUTOS / 60)}h, ${QUESTOES.length} questões`
+);
+console.log(
+  `✓ liberação: ${naEntrada.map((s) => s.id).join(", ")} na entrada; ` +
+    `as demais no dia ${DIAS_DE_CARENCIA + 1}`
 );

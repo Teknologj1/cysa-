@@ -64,6 +64,12 @@ export type Secao = {
   descricao: string;
   /** O que o aluno consegue fazer ao terminar a seção. */
   objetivos?: string[];
+  /**
+   * Dias completos de assinatura para a seção abrir. 0 = disponível na
+   * entrada. Omitido significa carência (ver `DIAS_DE_CARENCIA`), para que uma
+   * seção nova nunca abra antes do prazo por esquecimento.
+   */
+  diasParaLiberar?: number;
   licoes: Licao[];
 };
 

@@ -9,6 +9,7 @@ import { useProgresso } from "@/features/progresso/ProgressoProvider";
 import { useAssinatura } from "@/features/assinatura/AssinaturaProvider";
 import ProgressBar from "@/components/ui/ProgressBar";
 import { formatarDuracao, progressoDaSecao } from "../lib/navegacao";
+import { useLiberacao } from "../lib/useLiberacao";
 
 const ROTULO_TIPO: Record<Licao["tipo"], string> = {
   aula: "Aula",
@@ -36,7 +37,13 @@ export default function SecaoView({ secao }: { secao: SecaoPublica }) {
   const proxima =
     indice < SECOES_CATALOGO.length - 1 ? SECOES_CATALOGO[indice + 1] : null;
 
-  const liberada = (licao: LicaoPublica) => Boolean(licao.gratis) || (pronto && ativa);
+  const liberacaoDaSecao = useLiberacao()(secao);
+
+  const liberada = (licao: LicaoPublica) =>
+    Boolean(licao.gratis) || (pronto && ativa && liberacaoDaSecao.liberada);
+
+  /** Já paga, só esperando a seção abrir. */
+  const emEspera = pronto && ativa && !liberacaoDaSecao.liberada;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
@@ -61,6 +68,21 @@ export default function SecaoView({ secao }: { secao: SecaoPublica }) {
           Seção {secao.numero}: {secao.titulo}
         </h1>
         <p className="mt-3 text-mutedFg">{secao.descricao}</p>
+
+        {emEspera && (
+          <div className="mt-5 rounded-2xl border border-amber-500/40 bg-amber-500/[0.06] p-4">
+            <p className="text-sm font-medium text-amber-400">
+              {liberacaoDaSecao.dias === 1
+                ? "Esta seção abre amanhã"
+                : `Esta seção abre em ${liberacaoDaSecao.dias} dias`}
+            </p>
+            <p className="mt-2 text-sm text-mutedFg">
+              Na primeira semana o curso libera as seções 1 e 2, os fundamentos
+              que sustentam todo o resto. A partir do 8º dia de assinatura as
+              demais seções abrem de uma vez.
+            </p>
+          </div>
+        )}
 
         {secao.objetivos && secao.objetivos.length > 0 && (
           <div className="mt-6 rounded-2xl border border-border bg-muted/20 p-5">

@@ -19,6 +19,10 @@ export type AcessoDaLicao = {
   contasAtivas: boolean;
   liberado: boolean;
   logado: boolean;
+  /** A seção já abriu para esta assinatura. */
+  secaoLiberada: boolean;
+  /** Dias que faltam para abrir. 0 quando já abriu. */
+  diasAteLiberar: number;
 };
 
 export default function LicaoView({
@@ -48,7 +52,19 @@ export default function LicaoView({
     gratis: Boolean(licao.gratis),
     // Sem contas de verdade, o estado local ainda é o que temos.
     liberado: acesso.contasAtivas ? acesso.liberado : pronto && ativa,
+    // A carência só existe quando há assinatura datada para contar a partir.
+    secaoLiberada: acesso.contasAtivas ? acesso.secaoLiberada : true,
   });
+
+  /**
+   * Quem já paga e só está esperando a seção abrir precisa de prazo, não de
+   * oferta. A amostra grátis segue visível mesmo dentro da carência.
+   */
+  const emEspera =
+    acesso.contasAtivas &&
+    acesso.liberado &&
+    !acesso.secaoLiberada &&
+    !licao.gratis;
 
   // Com contas ativas a decisão veio pronta do servidor, então a página não
   // precisa esperar a hidratação para mostrar conteúdo ou paywall.
@@ -110,6 +126,7 @@ export default function LicaoView({
         <PaywallGate
           liberado={podeVer}
           aguardando={aguardandoCliente}
+          espera={emEspera ? { dias: acesso.diasAteLiberar } : null}
           mostrarEntrar={acesso.contasAtivas && !acesso.logado}
           titulo="Esta lição é para assinantes"
           descricao="Assine para liberar todas as lições, laboratórios e checkpoints do CS0-004."

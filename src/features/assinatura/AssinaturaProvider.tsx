@@ -24,6 +24,8 @@ type SessaoServidor = {
   logado: boolean;
   email: string | null;
   liberado: boolean;
+  cortesia?: boolean;
+  assinatura?: { criadaEm?: string | null } | null;
 };
 
 type EstadoAssinatura = {
@@ -35,6 +37,10 @@ type EstadoAssinatura = {
   contasAtivas: boolean;
   logado: boolean;
   email: string | null;
+  /** ISO do início da assinatura, para a carência de liberação. */
+  inicioAssinatura: string | null;
+  /** Cortesia entra sem carência. */
+  cortesia: boolean;
   ativar: (
     planoId: PlanId,
     origem: OrigemAssinatura,
@@ -126,6 +132,9 @@ export default function AssinaturaProvider({
       contasAtivas: comContas,
       logado: sessao?.logado ?? false,
       email: sessao?.email ?? assinatura.email,
+      inicioAssinatura: sessao?.assinatura?.criadaEm ?? null,
+      // Sem contas de verdade não há carência: o ambiente não tem o que datar.
+      cortesia: comContas ? Boolean(sessao?.cortesia) : true,
       ativar,
       remover,
     };

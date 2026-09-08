@@ -11,6 +11,8 @@ import { getDominio, rotuloDominio } from "@/content/dominios";
 import { useProgresso } from "@/features/progresso/ProgressoProvider";
 import { useAssinatura } from "@/features/assinatura/AssinaturaProvider";
 import ProgressBar from "@/components/ui/ProgressBar";
+import { useLiberacao } from "../lib/useLiberacao";
+import { rotuloDeLiberacao } from "@/lib/liberacao";
 import {
   formatarDuracao,
   progressoDaSecao,
@@ -22,10 +24,17 @@ import {
 export default function CursoLista() {
   const { progresso, pronto } = useProgresso();
   const { ativa } = useAssinatura();
+  const liberacaoDa = useLiberacao();
 
   const geral = progressoGeral(progresso.licoesConcluidas);
-  const proxima = proximaLicaoPendente(progresso.licoesConcluidas);
+  const proxima = proximaLicaoPendente(
+    progresso.licoesConcluidas,
+    (secao) => liberacaoDa(secao).liberada
+  );
   const grupos = secoesPorFase();
+  const emCarencia = grupos
+    .flatMap((grupo) => grupo.secoes)
+    .some((secao) => !liberacaoDa(secao).liberada);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -67,6 +76,13 @@ export default function CursoLista() {
           </div>
         )}
 
+        {pronto && ativa && emCarencia && (
+          <p className="mt-4 text-xs text-mutedFg">
+            Na primeira semana o curso libera as seções 1 e 2. A partir do 8º dia
+            de assinatura as demais abrem de uma vez.
+          </p>
+        )}
+
         {pronto && !ativa && (
           <p className="mt-4 text-xs text-mutedFg">
             Você está no acesso de amostra. As lições marcadas como{" "}
@@ -94,6 +110,7 @@ export default function CursoLista() {
               const parcial = progressoDaSecao(secao, progresso.licoesConcluidas);
               const cor = secao.dominio ? getDominio(secao.dominio).cor : "#94a3b8";
               const gratis = secao.licoes.filter((l) => l.gratis).length;
+              const liberacao = liberacaoDa(secao);
 
               return (
                 <li key={secao.id}>
@@ -117,6 +134,11 @@ export default function CursoLista() {
                           {gratis > 0 && (
                             <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[11px] font-medium text-emerald-400">
                               {gratis} grátis
+                            </span>
+                          )}
+                          {pronto && ativa && !liberacao.liberada && (
+                            <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[11px] font-medium text-amber-400">
+                              {rotuloDeLiberacao(liberacao.dias)}
                             </span>
                           )}
                         </div>

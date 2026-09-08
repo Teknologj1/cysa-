@@ -6,6 +6,8 @@ export const s01: Secao = {
   titulo: "Começando: o analista, o exame e o percurso",
   fase: "f0",
   dominio: null,
+  // Fundamentos: abrem no primeiro dia de assinatura.
+  diasParaLiberar: 0,
   descricao:
     "Quem você está se tornando, qual prova você vai enfrentar e como este curso está organizado para te levar até lá.",
   objetivos: [

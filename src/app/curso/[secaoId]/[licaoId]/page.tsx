@@ -4,6 +4,12 @@ import { getLicao } from "@/content/secoes";
 import { acessoDoUsuario } from "@/server/auth/sessao";
 import { podeEntregarConteudo } from "@/lib/acesso";
 import {
+  diasAteLiberar,
+  diasDeAssinatura,
+  diasParaLiberarSecao,
+  secaoLiberada as calcularSecaoLiberada,
+} from "@/lib/liberacao";
+import {
   extrasDaLicao,
   paraLicaoPublica,
   paraSecaoPublica,
@@ -39,10 +45,18 @@ export default async function LicaoPage({ params }: Props) {
    * Enquanto as contas não estiverem configuradas, `contasAtivas` é false e a
    * verificação continua sendo feita no cliente, como antes.
    */
+  const contextoDeLiberacao = {
+    diasParaLiberar: diasParaLiberarSecao(secao),
+    diasDecorridos: diasDeAssinatura(acesso.assinatura?.criadaEm ?? null),
+    cortesia: acesso.cortesia,
+  };
+  const liberada = calcularSecaoLiberada(contextoDeLiberacao);
+
   const entregar = podeEntregarConteudo({
     contasAtivas: acesso.contasAtivas,
     liberado: acesso.liberado,
     gratis: Boolean(licao.gratis),
+    secaoLiberada: liberada,
   });
 
   return (
@@ -57,6 +71,8 @@ export default async function LicaoPage({ params }: Props) {
         contasAtivas: acesso.contasAtivas,
         liberado: acesso.liberado,
         logado: Boolean(acesso.usuario),
+        secaoLiberada: liberada,
+        diasAteLiberar: diasAteLiberar(contextoDeLiberacao),
       }}
     />
   );

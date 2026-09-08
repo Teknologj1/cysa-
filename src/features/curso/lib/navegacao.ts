@@ -62,10 +62,26 @@ export function vizinhas(licaoId: string) {
   };
 }
 
-/** Próxima lição não concluída — alvo do botão "continuar de onde parei". */
-export function proximaLicaoPendente(concluidas: string[]) {
+/**
+ * Próxima lição não concluída — alvo do botão "continuar de onde parei".
+ *
+ * `estaLiberada` evita mandar o aluno para uma seção que ainda não abriu; sem
+ * ele, o botão levaria direto ao aviso de prazo.
+ */
+export function proximaLicaoPendente(
+  concluidas: string[],
+  estaLiberada?: (secao: SecaoPublica) => boolean
+) {
   const ordem = licoesEmOrdem();
-  return ordem.find((item) => !concluidas.includes(item.licao.id)) ?? ordem[0];
+  const disponivel = estaLiberada
+    ? ordem.filter((item) => estaLiberada(item.secao) || item.licao.gratis)
+    : ordem;
+
+  return (
+    disponivel.find((item) => !concluidas.includes(item.licao.id)) ??
+    disponivel[0] ??
+    ordem[0]
+  );
 }
 
 export function formatarDuracao(minutos: number): string {

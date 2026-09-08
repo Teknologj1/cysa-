@@ -19,6 +19,7 @@ export const SECOES_CATALOGO: SecaoPublica[] = [
       "Conhecer o formato do CS0-004 e o peso de cada domínio",
       "Montar um study tracker e usar o ritmo learn → checkpoint → lab → review"
     ],
+    "diasParaLiberar": 0,
     "licoes": [
       {
         "id": "s01l01",
@@ -69,6 +70,7 @@ export const SECOES_CATALOGO: SecaoPublica[] = [
       "Identificar lacunas de monitoramento em um ambiente descrito",
       "Reconhecer falhas de handover como causa raiz de problemas operacionais"
     ],
+    "diasParaLiberar": 0,
     "licoes": [
       {
         "id": "s02l01",
