@@ -2,9 +2,10 @@ import type { Licao, Secao } from "../types";
 import { s01 } from "./s01-comecando";
 import { s02 } from "./s02-fundamentos-soc";
 import { s03 } from "./s03-risco-controles";
+import { s04 } from "./s04-infraestrutura";
 
 /** Registro ordenado das seções publicadas. Adicione novas seções aqui. */
-export const SECOES: Secao[] = [s01, s02, s03];
+export const SECOES: Secao[] = [s01, s02, s03, s04];
 
 export const TOTAL_LICOES = SECOES.reduce((n, s) => n + s.licoes.length, 0);
 
@@ -57,4 +58,4 @@ export function licaoEhGratis(licaoId: string): boolean {
 
 export const LICOES_GRATIS = LICOES_EM_ORDEM.filter((item) => item.licao.gratis);
 
-export { s01, s02, s03 };
+export { s01, s02, s03, s04 };

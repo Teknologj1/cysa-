@@ -210,6 +210,89 @@ export const SECOES_CATALOGO: SecaoPublica[] = [
         "rota": "/simulado?secao=s03"
       }
     ]
+  },
+  {
+    "id": "s04",
+    "numero": 4,
+    "titulo": "Conceitos de infraestrutura de sistemas",
+    "fase": "f1",
+    "dominio": "d1",
+    "descricao": "O terreno que você defende: on-premise, nuvem, híbrido, virtualização, containers, APIs e dispositivos. Sem esse mapa, você não sabe o que é normal — e o que não é passa despercebido.",
+    "objetivos": [
+      "Comparar arquiteturas on-premise, cloud e híbrida do ponto de vista de monitoramento",
+      "Aplicar o modelo de responsabilidade compartilhada a um cenário de nuvem",
+      "Distinguir hypervisor tipo 1 de tipo 2 e explicar o risco de VM escape",
+      "Identificar os principais riscos de segurança em Docker e Kubernetes",
+      "Reconhecer enumeração de API e credential stuffing em logs de acesso",
+      "Diferenciar MDM, MAM e UEM e explicar o ponto cego de dispositivos não gerenciados"
+    ],
+    "licoes": [
+      {
+        "id": "s04l01",
+        "titulo": "Infraestrutura e arquitetura de sistemas",
+        "resumo": "On-premise, nuvem, híbrido, SDN e IAM: onde ficam os logs, onde ficam as fronteiras de confiança e por onde um atacante pivota.",
+        "minutos": 18,
+        "tipo": "aula",
+        "objetivo": "1.1",
+        "gratis": true
+      },
+      {
+        "id": "s04l02",
+        "titulo": "Arquitetura cloud native",
+        "resumo": "Microsserviços, serverless, infraestrutura como código e as fontes de log que substituem o SIEM tradicional.",
+        "minutos": 20,
+        "tipo": "aula",
+        "objetivo": "1.1"
+      },
+      {
+        "id": "s04l03",
+        "titulo": "Virtualização e segurança",
+        "resumo": "Hypervisor tipo 1 e tipo 2, VM escape, VM sprawl, abuso de snapshot e o ponto cego do tráfego east-west.",
+        "minutos": 18,
+        "tipo": "aula",
+        "objetivo": "1.1"
+      },
+      {
+        "id": "s04l04",
+        "titulo": "Containers: Docker e Kubernetes",
+        "resumo": "Kernel compartilhado, imagem envenenada, RBAC mal configurado, API server exposta e as duas ferramentas que dão visibilidade: Falco e o audit log.",
+        "minutos": 20,
+        "tipo": "aula",
+        "objetivo": "1.1"
+      },
+      {
+        "id": "s04l05",
+        "titulo": "Conceitos de API",
+        "resumo": "REST, OWASP API Security Top 10, autenticação por chave e OAuth, e o que enumeração e credential stuffing parecem num log.",
+        "minutos": 18,
+        "tipo": "aula",
+        "objetivo": "1.1"
+      },
+      {
+        "id": "s04l06",
+        "titulo": "Lab: enumeração de API em logs de acesso",
+        "resumo": "Comparar tráfego normal com enumeração num log real, e praticar a disciplina de não concluir mais do que a evidência sustenta.",
+        "minutos": 25,
+        "tipo": "lab",
+        "objetivo": "1.1"
+      },
+      {
+        "id": "s04l07",
+        "titulo": "Gestão de dispositivos",
+        "resumo": "MDM, MAM, UEM, EDR, zero trust e IoT: por que dispositivo não gerenciado é ponto cego de monitoramento.",
+        "minutos": 18,
+        "tipo": "aula",
+        "objetivo": "1.1"
+      },
+      {
+        "id": "s04l08",
+        "titulo": "Checkpoint: infraestrutura de sistemas",
+        "resumo": "Consolidação das sete lições: arquiteturas, responsabilidade compartilhada, virtualização, containers, APIs e gestão de dispositivos.",
+        "minutos": 20,
+        "tipo": "checkpoint",
+        "rota": "/simulado?secao=s04"
+      }
+    ]
   }
 ];
 
@@ -233,12 +316,17 @@ export const SECOES_COM_CHECKPOINT: {
     "id": "s03",
     "numero": 3,
     "titulo": "Gestão de risco e controles de segurança"
+  },
+  {
+    "id": "s04",
+    "numero": 4,
+    "titulo": "Conceitos de infraestrutura de sistemas"
   }
 ];
 
-export const TOTAL_LICOES_CATALOGO = 19;
-export const TOTAL_QUESTOES = 58;
-export const TOTAL_QUESTOES_GRATIS = 11;
+export const TOTAL_LICOES_CATALOGO = 27;
+export const TOTAL_QUESTOES = 79;
+export const TOTAL_QUESTOES_GRATIS = 12;
 
 export function getSecaoCatalogo(id: string): SecaoPublica | undefined {
   return SECOES_CATALOGO.find((secao) => secao.id === id);

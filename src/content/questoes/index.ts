@@ -3,11 +3,13 @@ import { BANCO_GERAL } from "./banco-geral";
 import { QUESTOES_S01 } from "./s01";
 import { QUESTOES_S02 } from "./s02";
 import { QUESTOES_S03 } from "./s03";
+import { QUESTOES_S04 } from "./s04";
 
 export const QUESTOES: Questao[] = [
   ...QUESTOES_S01,
   ...QUESTOES_S02,
   ...QUESTOES_S03,
+  ...QUESTOES_S04,
   ...BANCO_GERAL,
 ];
 

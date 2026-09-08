@@ -70,7 +70,9 @@ Como decidir o que vem primeiro? Pensando em risco:
 
 ## Como o risco é medido
 
-$$\\text{risco} = \\text{probabilidade} \\times \\text{impacto}$$
+\`\`\`
+risco = probabilidade × impacto
+\`\`\`
 
 **Probabilidade** é a chance de a ameaça realmente explorar a vulnerabilidade.
 **Impacto** é a severidade do dano se isso acontecer. As organizações costumam
@@ -87,9 +89,10 @@ negócio se for?*
 Análise quantitativa põe **valor em reais** no risco. Duas fórmulas precisam
 estar automáticas:
 
-$$\\text{SLE} = \\text{valor do ativo} \\times \\text{fator de exposição}$$
-
-$$\\text{ALE} = \\text{SLE} \\times \\text{ARO}$$
+\`\`\`
+SLE = valor do ativo × fator de exposição
+ALE = SLE × ARO
+\`\`\`
 
 - **SLE** (*single loss expectancy*) — quanto custa **um** incidente
 - **ARO** (*annualized rate of occurrence*) — quantas vezes por ano ele ocorre
@@ -100,11 +103,15 @@ $$\\text{ALE} = \\text{SLE} \\times \\text{ARO}$$
 Um servidor de banco de dados vale **R$ 100.000**. Você estima que um ataque
 bem-sucedido comprometeria **40%** desse valor — o fator de exposição é 0,4.
 
-$$\\text{SLE} = 100.000 \\times 0{,}4 = 40.000$$
+\`\`\`
+SLE = 100.000 × 0,4 = 40.000
+\`\`\`
 
 Se o incidente acontece uma vez a cada cinco anos, o ARO é **0,2**:
 
-$$\\text{ALE} = 40.000 \\times 0{,}2 = 8.000 \\text{ por ano}$$
+\`\`\`
+ALE = 40.000 × 0,2 = 8.000 por ano
+\`\`\`
 
 Agora existe argumento de negócio: um controle que custa R$ 3.000 por ano e
 reduz esse risco se paga. Um que custa R$ 30.000 por ano, não.
