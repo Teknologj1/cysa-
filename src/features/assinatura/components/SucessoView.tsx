@@ -13,6 +13,8 @@ type RespostaVerificacao = {
   pago?: boolean;
   planoId?: PlanId | null;
   email?: string | null;
+  /** true quando o pagamento já abriu a sessão neste navegador. */
+  sessaoAberta?: boolean;
   erro?: string;
 };
 
@@ -22,6 +24,7 @@ export default function SucessoView() {
   const ehDemo = parametros.get("demo") === "1";
 
   const { ativar, assinatura, contasAtivas } = useAssinatura();
+  const [sessaoAberta, setSessaoAberta] = useState(false);
   const [estado, setEstado] = useState<Estado>(
     ehDemo ? "demo" : sessionId ? "verificando" : "falhou"
   );
@@ -40,6 +43,7 @@ export default function SucessoView() {
 
         if (dado.pago && dado.planoId) {
           ativar(dado.planoId, "stripe", dado.email ?? null, sessionId);
+          setSessaoAberta(Boolean(dado.sessaoAberta));
           setEstado("confirmado");
           return;
         }
@@ -76,12 +80,27 @@ export default function SucessoView() {
               : "Todas as seções, laboratórios e simulados estão liberados. Bons estudos!"}
           </p>
 
-          {contasAtivas && (
+          {contasAtivas && sessaoAberta && (
+            <div className="mx-auto mt-6 max-w-md rounded-2xl border border-emerald-500/40 bg-emerald-500/[0.06] p-4 text-left">
+              <p className="text-sm font-medium text-emerald-400">
+                Você já está conectado
+              </p>
+              <p className="mt-2 text-sm text-mutedFg">
+                Para estudar em outro aparelho, é só pedir um link de acesso em{" "}
+                <Link href="/entrar" className="text-primary hover:underline">
+                  entrar
+                </Link>{" "}
+                usando este mesmo e-mail.
+              </p>
+            </div>
+          )}
+
+          {contasAtivas && !sessaoAberta && (
             <div className="mx-auto mt-6 max-w-md rounded-2xl border border-cyan-500/40 bg-cyan-500/[0.06] p-4 text-left">
               <p className="text-sm font-medium">Falta um passo</p>
               <p className="mt-2 text-sm text-mutedFg">
                 Entre com o mesmo e-mail da compra para o acesso valer em
-                qualquer aparelho — celular, tablet e computador.
+                qualquer aparelho.
               </p>
               <Link
                 href="/entrar?proximo=/curso"

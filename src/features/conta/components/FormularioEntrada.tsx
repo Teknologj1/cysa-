@@ -2,14 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { getSupabaseNavegador } from "../lib/supabase-browser";
 
 type Estado = "formulario" | "enviando" | "enviado" | "erro";
 
 /**
- * Entrada por link mágico: o aluno informa o e-mail e recebe um link de
- * acesso. É o mesmo e-mail usado no checkout, e é isso que liga a compra à
- * conta — sem exigir cadastro antes de pagar.
+ * Entrada por link de acesso: o aluno informa o e-mail e recebe um link. É o
+ * mesmo e-mail usado no checkout, e é isso que liga a compra à conta — sem
+ * exigir cadastro antes de pagar.
  */
 export default function FormularioEntrada({
   proximo = "/curso",
@@ -22,23 +21,26 @@ export default function FormularioEntrada({
 
   async function enviar(evento: React.FormEvent) {
     evento.preventDefault();
-    const supabase = getSupabaseNavegador();
-    if (!supabase) return;
-
     setEstado("enviando");
-    const destino = `${window.location.origin}/auth/callback?proximo=${encodeURIComponent(proximo)}`;
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { emailRedirectTo: destino },
-    });
+    try {
+      const resposta = await fetch("/api/auth/link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), proximo }),
+      });
+      const dado = (await resposta.json()) as { enviado?: boolean; erro?: string };
 
-    if (error) {
-      setMensagemErro(error.message);
+      if (!resposta.ok || !dado.enviado) {
+        setMensagemErro(dado.erro ?? "Não foi possível enviar o link.");
+        setEstado("erro");
+        return;
+      }
+      setEstado("enviado");
+    } catch {
+      setMensagemErro("Falha de conexão. Tente novamente.");
       setEstado("erro");
-      return;
     }
-    setEstado("enviado");
   }
 
   if (estado === "enviado") {
@@ -51,7 +53,7 @@ export default function FormularioEntrada({
         <p className="mx-auto mt-2 max-w-sm text-sm text-mutedFg">
           Abra o e-mail que acabamos de mandar para{" "}
           <strong className="text-foreground">{email}</strong> e clique no link
-          de acesso. Ele vale por uma hora.
+          de acesso. Ele vale por 30 minutos.
         </p>
         <button
           type="button"

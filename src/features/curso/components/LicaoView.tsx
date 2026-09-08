@@ -4,14 +4,18 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { vizinhas } from "@/content/secoes";
 import { getDominio, rotuloDominio } from "@/content/dominios";
-import type { Licao, Secao } from "@/content/types";
+import type {
+  LicaoExtras,
+  LicaoPublica,
+  SecaoPublica,
+} from "../lib/publico";
 import { useProgresso } from "@/features/progresso/ProgressoProvider";
 import { useAssinatura } from "@/features/assinatura/AssinaturaProvider";
 import PaywallGate from "@/features/assinatura/components/PaywallGate";
 import { podeVerConteudo } from "@/lib/acesso";
 
 export type AcessoDaLicao = {
-  /** true quando já existem contas de verdade (Supabase configurado). */
+  /** true quando já existem contas de verdade neste ambiente. */
   contasAtivas: boolean;
   liberado: boolean;
   logado: boolean;
@@ -20,11 +24,14 @@ export type AcessoDaLicao = {
 export default function LicaoView({
   secao,
   licao,
+  extras,
   acesso,
   conteudo,
 }: {
-  secao: Secao;
-  licao: Licao;
+  secao: SecaoPublica;
+  licao: LicaoPublica;
+  /** Material de apoio: null quando não há direito de acesso. */
+  extras: LicaoExtras | null;
   acesso: AcessoDaLicao;
   /** Markdown já renderizado no servidor (Server Component). */
   conteudo?: React.ReactNode;
@@ -42,6 +49,10 @@ export default function LicaoView({
     // Sem contas de verdade, o estado local ainda é o que temos.
     liberado: acesso.contasAtivas ? acesso.liberado : pronto && ativa,
   });
+
+  // Com contas ativas a decisão veio pronta do servidor, então a página não
+  // precisa esperar a hidratação para mostrar conteúdo ou paywall.
+  const aguardandoCliente = !acesso.contasAtivas && !pronto;
   const router = useRouter();
 
   const feita = progresso.licoesConcluidas.includes(licao.id);
@@ -98,6 +109,7 @@ export default function LicaoView({
       <div className="mt-8">
         <PaywallGate
           liberado={podeVer}
+          aguardando={aguardandoCliente}
           mostrarEntrar={acesso.contasAtivas && !acesso.logado}
           titulo="Esta lição é para assinantes"
           descricao="Assine para liberar todas as lições, laboratórios e checkpoints do CS0-004."
@@ -111,9 +123,9 @@ export default function LicaoView({
                 O texto completo desta lição está sendo escrito. Enquanto isso,
                 este é o roteiro do que ela cobre:
               </p>
-              {licao.roteiro && (
+              {extras?.roteiro && (
                 <ul className="mt-4 space-y-2 text-sm text-mutedFg">
-                  {licao.roteiro.map((topico) => (
+                  {extras.roteiro.map((topico) => (
                     <li key={topico} className="flex gap-2">
                       <span aria-hidden className="mt-0.5 text-primary">
                         ›
@@ -126,13 +138,13 @@ export default function LicaoView({
             </div>
           )}
 
-          {licao.pontosChave && licao.pontosChave.length > 0 && (
+          {extras?.pontosChave && extras.pontosChave.length > 0 && (
             <section className="mt-10 rounded-2xl border border-border bg-muted/30 p-5">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-mutedFg">
                 O que precisa ficar
               </h2>
               <ul className="mt-4 space-y-2.5 text-sm">
-                {licao.pontosChave.map((ponto) => (
+                {extras.pontosChave.map((ponto) => (
                   <li key={ponto} className="flex gap-2.5">
                     <span aria-hidden className="mt-0.5 text-primary">
                       ▪
@@ -144,29 +156,29 @@ export default function LicaoView({
             </section>
           )}
 
-          {licao.dicaExame && (
+          {extras?.dicaExame && (
             <section className="mt-5 rounded-2xl border border-amber-500/40 bg-amber-500/[0.06] p-5">
               <h2 className="text-sm font-semibold text-amber-400">
                 Na prova
               </h2>
-              <p className="mt-2 text-sm text-mutedFg">{licao.dicaExame}</p>
+              <p className="mt-2 text-sm text-mutedFg">{extras.dicaExame}</p>
             </section>
           )}
 
-          {licao.tarefa && (
+          {extras?.tarefa && (
             <section className="mt-5 rounded-2xl border border-cyan-500/40 bg-cyan-500/[0.06] p-5">
               <h2 className="text-sm font-semibold text-cyan-400">
                 Antes da próxima lição
               </h2>
-              <p className="mt-2 text-sm text-mutedFg">{licao.tarefa}</p>
+              <p className="mt-2 text-sm text-mutedFg">{extras.tarefa}</p>
             </section>
           )}
 
-          {licao.recursos && licao.recursos.length > 0 && (
+          {extras?.recursos && extras.recursos.length > 0 && (
             <section className="mt-5 rounded-2xl border border-border p-5">
               <h2 className="text-sm font-semibold">Recursos</h2>
               <ul className="mt-3 space-y-2 text-sm">
-                {licao.recursos.map((recurso) => (
+                {extras.recursos.map((recurso) => (
                   <li key={recurso.url}>
                     <a
                       href={recurso.url}

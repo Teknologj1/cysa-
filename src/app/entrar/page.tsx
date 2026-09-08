@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { autenticacaoConfigurada, usuarioAtual } from "@/server/auth/sessao";
+import { emailConfigurado } from "@/server/email/enviar";
 import FormularioEntrada from "@/features/conta/components/FormularioEntrada";
 
 export const metadata: Metadata = {
@@ -46,9 +47,22 @@ export default async function EntrarPage({ searchParams }: Props) {
         Você recebe um link de acesso por e-mail. Não existe senha.
       </p>
 
-      <div className="mt-8">
-        <FormularioEntrada proximo={proximo || "/curso"} />
-      </div>
+      {emailConfigurado() ? (
+        <div className="mt-8">
+          <FormularioEntrada proximo={proximo || "/curso"} />
+        </div>
+      ) : (
+        <div className="mt-8 rounded-2xl border border-amber-500/40 bg-amber-500/[0.06] p-5">
+          <p className="text-sm font-medium text-amber-400">
+            Envio de e-mail ainda não configurado
+          </p>
+          <p className="mt-2 text-sm text-mutedFg">
+            Quem acabou de comprar já entra direto pelo retorno do pagamento.
+            Para voltar em outro aparelho, é preciso configurar o envio do link
+            de acesso.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

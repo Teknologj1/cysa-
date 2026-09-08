@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SECOES, getSecao } from "@/content/secoes";
 import SecaoView from "@/features/curso/components/SecaoView";
+import { paraSecaoPublica } from "@/features/curso/lib/publico";
 
 type Props = { params: Promise<{ secaoId: string }> };
 
@@ -21,5 +22,5 @@ export default async function SecaoPage({ params }: Props) {
   const secao = getSecao(secaoId);
   if (!secao) notFound();
 
-  return <SecaoView secao={secao} />;
+  return <SecaoView secao={paraSecaoPublica(secao)} />;
 }

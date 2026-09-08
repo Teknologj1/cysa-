@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { SECOES, minutosDaSecao } from "@/content/secoes";
 import { getDominio, rotuloDominio } from "@/content/dominios";
-import type { Licao, Secao } from "@/content/types";
+import type { Licao } from "@/content/types";
+import type { LicaoPublica, SecaoPublica } from "../lib/publico";
 import { useProgresso } from "@/features/progresso/ProgressoProvider";
 import { useAssinatura } from "@/features/assinatura/AssinaturaProvider";
 import ProgressBar from "@/components/ui/ProgressBar";
@@ -23,7 +24,7 @@ const ICONE_TIPO: Record<Licao["tipo"], string> = {
   checkpoint: "◈",
 };
 
-export default function SecaoView({ secao }: { secao: Secao }) {
+export default function SecaoView({ secao }: { secao: SecaoPublica }) {
   const { progresso } = useProgresso();
   const { ativa, pronto } = useAssinatura();
 
@@ -34,7 +35,7 @@ export default function SecaoView({ secao }: { secao: Secao }) {
   const anterior = indice > 0 ? SECOES[indice - 1] : null;
   const proxima = indice < SECOES.length - 1 ? SECOES[indice + 1] : null;
 
-  const liberada = (licao: Licao) => Boolean(licao.gratis) || (pronto && ativa);
+  const liberada = (licao: LicaoPublica) => Boolean(licao.gratis) || (pronto && ativa);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">

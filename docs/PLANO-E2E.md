@@ -47,23 +47,23 @@ Roteiro completo em [`DEPLOY-VERCEL.md`](DEPLOY-VERCEL.md).
 
 ### Fase B — direito de acesso confiável ✅ implementada, aguardando configuração
 
-Guia de configuração em [`CONTAS-SUPABASE.md`](CONTAS-SUPABASE.md).
+Guia de configuração em [`CONTAS.md`](CONTAS.md).
 
-6. ✅ **Autenticação** por link mágico (Supabase Auth), sem senha, usando o
-   mesmo e-mail do checkout
-7. ✅ **Assinatura persistida** no Postgres pelo webhook do Stripe, que virou a
-   fonte da verdade: `checkout.session.completed` e `customer.subscription.*`
-   criam, atualizam e revogam o acesso
+6. ✅ **Autenticação** por link de acesso assinado, sem senha e sem banco,
+   usando o mesmo e-mail do checkout
+7. ✅ **Direito de acesso consultado no Stripe**, a fonte da verdade, com cache
+   curto derrubado pelo webhook a cada mudança
 8. ✅ **Verificação no servidor** — o corpo da lição paga não é renderizado nem
    enviado sem direito de acesso, em vez de ficar escondido no cliente
 9. ✅ **Portal do cliente do Stripe** em `/conta`, para trocar cartão, ver
    faturas e cancelar
 10. ⏳ **Sincronizar progresso** com a conta, mantendo o `localStorage` como
-    cache offline — próxima peça natural
+    cache offline — é o único item que realmente exige um banco, já que esse
+    dado é nosso e não do Stripe
 
-> Enquanto as variáveis do Supabase não estiverem configuradas, o app segue
-> exatamente como antes, com a assinatura registrada no aparelho. A troca é
-> silenciosa: configurar as variáveis e fazer redeploy liga o modo com contas.
+> Enquanto `AUTH_SECRET` não estiver configurada, o app segue exatamente como
+> antes, com a assinatura registrada no aparelho. A troca é silenciosa:
+> configurar a variável e fazer redeploy liga o modo com contas.
 
 ### Fase C — conteúdo e escala
 
@@ -98,9 +98,9 @@ Fase D  →  crescimento
 ```
 
 A fase A está concluída: o app vende e entrega. A fase B está implementada e
-depende apenas de criar o projeto no Supabase e cadastrar três variáveis — a
-partir daí o acesso passa a valer em qualquer aparelho, o cancelamento revoga
-de verdade e o conteúdo pago deixa de trafegar para quem não pagou.
+depende apenas de gerar um segredo e cadastrá-lo na Vercel — a partir daí o
+acesso passa a valer em qualquer aparelho, o cancelamento revoga de verdade e o
+conteúdo pago deixa de trafegar para quem não pagou.
 
 Com as duas no ar, a venda pode ser aberta ao público. As fases C e D são
 crescimento: mais conteúdo, mais alcance.

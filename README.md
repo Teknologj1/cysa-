@@ -89,14 +89,15 @@ confirma o pagamento em `/api/checkout/verificar` antes de liberar o conteúdo.
 
 ## Contas e direito de acesso
 
-Com o Supabase configurado, a assinatura é gravada no Postgres pelo webhook do
-Stripe, o aluno entra por link mágico com o e-mail da compra e **a decisão de
-acesso acontece no servidor**: o corpo da lição paga não é renderizado nem
-enviado a quem não tem direito.
+Não há banco de dados: o **Stripe é a fonte da verdade** sobre quem pagou, e é
+consultado direto, com cache curto em memória. A identidade vem de um cookie
+assinado por HMAC, e o aluno prova a posse do e-mail pelo link de acesso — o
+mesmo e-mail do checkout, sem exigir cadastro antes de pagar.
 
-Sem as variáveis do Supabase, o app funciona como antes, com a assinatura
-registrada no próprio aparelho. Passo a passo em
-[`docs/CONTAS-SUPABASE.md`](docs/CONTAS-SUPABASE.md).
+A decisão acontece no servidor: o corpo da lição paga não é renderizado nem
+enviado a quem não tem direito. Sem `AUTH_SECRET`, o app funciona como antes,
+com a assinatura registrada no próprio aparelho. Passo a passo em
+[`docs/CONTAS.md`](docs/CONTAS.md).
 
 ## Estrutura
 
@@ -128,13 +129,13 @@ src/
     ui/                      toast, tema, barra de progresso, markdown
   providers/                 composição de providers e tema
   server/                    só roda no servidor
-    auth/                    sessão, usuário e direito de acesso
-    db/                      cliente Supabase e repositório de assinaturas
+    auth/                    tokens assinados e sessão
+    assinatura/              consulta da assinatura no Stripe
+    email/                   envio do link de acesso
   content/                   currículo, questões, planos, FAQ, lab e empresa
   lib/                       cliente Stripe (servidor)
 public/                      manifesto, ícones, página offline, SW customizado
 scripts/                     setup do Stripe e verificação de deploy
-supabase/migrations/         schema versionado do banco
 ```
 
 Todo o conteúdo do curso vive em `src/content/` — uma seção por arquivo em
@@ -147,8 +148,8 @@ adicionar conteúdo está em [`docs/CONTEUDO.md`](docs/CONTEUDO.md).
   o que já funciona e o que falta para produção
 - [`docs/DEPLOY-VERCEL.md`](docs/DEPLOY-VERCEL.md) — deploy, variáveis de
   ambiente, webhook e domínio
-- [`docs/CONTAS-SUPABASE.md`](docs/CONTAS-SUPABASE.md) — contas, assinatura no
-  banco e verificação de acesso no servidor
+- [`docs/CONTAS.md`](docs/CONTAS.md) — contas, direito de acesso consultado no
+  Stripe e verificação no servidor
 - [`docs/CONTEUDO.md`](docs/CONTEUDO.md) — como enviar e publicar o conteúdo de
   cada seção e lição
 

@@ -1,79 +1,65 @@
 import { cookies } from "next/headers";
-import { createServerClient } from "@supabase/ssr";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import {
-  type AssinaturaSalva,
+  COOKIE_SESSAO,
+  VALIDADE_SESSAO_MS,
+  criarToken,
+  lerToken,
+  segredoConfigurado,
+} from "./token";
+import {
+  type AssinaturaDoCliente,
   assinaturaPorEmail,
   temAcesso,
-} from "@/server/db/assinaturas";
-
-export function autenticacaoConfigurada(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  );
-}
+} from "@/server/assinatura/stripe";
 
 /**
- * Cliente do Supabase ligado aos cookies da requisição. Usa a chave anônima:
- * ele enxerga apenas o que a sessão do próprio usuário permite.
+ * Contas só existem quando há segredo para assinar a sessão e Stripe para
+ * consultar a assinatura. Sem isso, o app cai no modo anterior, com o acesso
+ * registrado apenas no aparelho.
  */
-export async function clienteDaSessao(): Promise<SupabaseClient | null> {
-  if (!autenticacaoConfigurada()) return null;
-
-  const armazemDeCookies = await cookies();
-
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
-    {
-      cookies: {
-        getAll() {
-          return armazemDeCookies.getAll();
-        },
-        setAll(novos) {
-          try {
-            for (const { name, value, options } of novos) {
-              armazemDeCookies.set(name, value, options);
-            }
-          } catch {
-            // Server Components não podem gravar cookies; o middleware cuida
-            // da renovação da sessão.
-          }
-        },
-      },
-    }
-  );
+export function autenticacaoConfigurada(): boolean {
+  return segredoConfigurado() && Boolean(process.env.STRIPE_SECRET_KEY);
 }
 
-export type UsuarioAtual = { id: string; email: string } | null;
+export type UsuarioAtual = { email: string } | null;
 
 export async function usuarioAtual(): Promise<UsuarioAtual> {
-  const supabase = await clienteDaSessao();
-  if (!supabase) return null;
+  if (!autenticacaoConfigurada()) return null;
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const armazem = await cookies();
+  const conteudo = lerToken(armazem.get(COOKIE_SESSAO)?.value, "sessao");
+  return conteudo ? { email: conteudo.email } : null;
+}
 
-  if (!user?.email) return null;
-  return { id: user.id, email: user.email };
+/** Grava a sessão. Só pode ser chamada de Route Handler ou Server Action. */
+export async function definirSessao(email: string): Promise<void> {
+  const armazem = await cookies();
+
+  armazem.set(COOKIE_SESSAO, criarToken(email, "sessao", VALIDADE_SESSAO_MS), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: Math.floor(VALIDADE_SESSAO_MS / 1000),
+  });
+}
+
+export async function limparSessao(): Promise<void> {
+  const armazem = await cookies();
+  armazem.delete(COOKIE_SESSAO);
 }
 
 export type AcessoDoUsuario = {
-  /** false quando o Supabase ainda não está configurado no ambiente. */
+  /** false quando ainda não existem contas de verdade neste ambiente. */
   contasAtivas: boolean;
   usuario: UsuarioAtual;
-  assinatura: AssinaturaSalva | null;
+  assinatura: AssinaturaDoCliente | null;
   liberado: boolean;
 };
 
 /**
- * Fonte da verdade do direito de acesso, avaliada no servidor.
- *
- * Sem Supabase configurado, `contasAtivas` volta false e as telas caem no
- * comportamento anterior, guardado no próprio aparelho — o app continua de pé
- * enquanto a infraestrutura de contas não existe.
+ * Fonte da verdade do direito de acesso, avaliada no servidor a cada página
+ * protegida. A assinatura vem do próprio Stripe.
  */
 export async function acessoDoUsuario(): Promise<AcessoDoUsuario> {
   if (!autenticacaoConfigurada()) {

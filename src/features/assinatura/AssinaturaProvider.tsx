@@ -31,7 +31,7 @@ type EstadoAssinatura = {
   pronto: boolean;
   assinatura: Assinatura;
   ativa: boolean;
-  /** true quando o app já tem contas de verdade (Supabase configurado). */
+  /** true quando o app já tem contas de verdade neste ambiente. */
   contasAtivas: boolean;
   logado: boolean;
   email: string | null;

@@ -10,20 +10,24 @@ import { useAssinatura } from "../AssinaturaProvider";
 export default function PaywallGate({
   children,
   liberado = false,
+  aguardando,
   mostrarEntrar = false,
   titulo = "Conteúdo exclusivo para assinantes",
   descricao = "Assine para desbloquear todas as seções, laboratórios e simulados do CS0-004.",
 }: {
   children: React.ReactNode;
   liberado?: boolean;
+  /** Espera a hidratação antes de decidir. Quando o servidor já decidiu, false. */
+  aguardando?: boolean;
   /** Oferece o login para quem já comprou e está apenas deslogado. */
   mostrarEntrar?: boolean;
   titulo?: string;
   descricao?: string;
 }) {
   const { ativa, pronto } = useAssinatura();
+  const esperando = aguardando ?? !pronto;
 
-  if (!pronto) {
+  if (esperando) {
     return (
       <div
         className="h-40 animate-pulse rounded-2xl border border-border bg-muted/40"

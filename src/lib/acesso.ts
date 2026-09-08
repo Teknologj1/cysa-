@@ -4,7 +4,7 @@
  */
 
 export type ContextoDeAcesso = {
-  /** true quando o Supabase está configurado e há contas de verdade. */
+  /** true quando existem contas de verdade neste ambiente. */
   contasAtivas: boolean;
   /** Assinatura ativa confirmada no banco, para o usuário da sessão. */
   liberado: boolean;

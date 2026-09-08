@@ -1,36 +1,36 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
-import { supabaseConfigurado } from "@/server/db/supabase";
-import {
-  type StatusAssinatura,
-  atualizarPorSubscriptionId,
-  salvarAssinatura,
-} from "@/server/db/assinaturas";
+import { limparCacheDeAssinatura } from "@/server/assinatura/stripe";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * Fim do período pago. A partir da versão atual da API, o campo vive no item
- * da assinatura, não na assinatura em si.
+ * Webhook do Stripe.
+ *
+ * O direito de acesso é consultado no próprio Stripe a cada verificação, então
+ * não há nada para gravar aqui. O papel deste endpoint é derrubar o cache de
+ * curta duração assim que algo muda — sem ele, uma compra ou um cancelamento
+ * levariam alguns minutos para refletir.
  */
-function periodoFimDe(assinatura: Stripe.Subscription): string | null {
-  const item = assinatura.items?.data?.[0];
-  if (!item?.current_period_end) return null;
-  return new Date(item.current_period_end * 1000).toISOString();
-}
 
-function planoDe(assinatura: Stripe.Subscription): string | null {
-  return (assinatura.metadata?.planoId as string | undefined) ?? null;
-}
-
-/** O e-mail é a chave que liga a compra à conta do aluno. */
-async function emailDe(
+async function emailDoEvento(
   stripe: Stripe,
-  assinatura: Stripe.Subscription
+  evento: Stripe.Event
 ): Promise<string | null> {
-  const cliente = assinatura.customer;
+  const objeto = evento.data.object as
+    | Stripe.Checkout.Session
+    | Stripe.Subscription
+    | Stripe.Invoice;
+
+  // O checkout já traz o e-mail informado pelo cliente.
+  if ("customer_details" in objeto && objeto.customer_details?.email) {
+    return objeto.customer_details.email;
+  }
+
+  const cliente = (objeto as Stripe.Subscription).customer;
+  if (!cliente) return null;
 
   if (typeof cliente !== "string") {
     return cliente.deleted ? null : (cliente.email ?? null);
@@ -45,43 +45,6 @@ async function emailDe(
   }
 }
 
-async function registrarAssinatura(
-  stripe: Stripe,
-  assinatura: Stripe.Subscription,
-  checkoutSessionId?: string
-) {
-  const email = await emailDe(stripe, assinatura);
-  if (!email) {
-    console.error(
-      `[stripe] assinatura ${assinatura.id} sem e-mail de cliente — acesso não registrado`
-    );
-    return;
-  }
-
-  await salvarAssinatura({
-    email,
-    stripeCustomerId:
-      typeof assinatura.customer === "string"
-        ? assinatura.customer
-        : assinatura.customer.id,
-    stripeSubscriptionId: assinatura.id,
-    stripeCheckoutSessionId: checkoutSessionId ?? null,
-    planoId: planoDe(assinatura),
-    status: assinatura.status as StatusAssinatura,
-    periodoFim: periodoFimDe(assinatura),
-  });
-
-  console.log(
-    `[stripe] acesso registrado para ${email} (${assinatura.status})`
-  );
-}
-
-/**
- * Webhook do Stripe — fonte da verdade do direito de acesso.
- *
- * Os eventos são idempotentes: a gravação usa o ID da assinatura como chave,
- * então reentregas não duplicam registro.
- */
 export async function POST(request: Request) {
   const stripe = getStripe();
   const segredo = process.env.STRIPE_WEBHOOK_SECRET;
@@ -112,63 +75,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ erro: "Assinatura inválida" }, { status: 400 });
   }
 
-  // Sem banco configurado, apenas registramos: o app segue no modo local.
-  if (!supabaseConfigurado()) {
-    console.log(
-      `[stripe] evento ${evento.type} recebido; banco não configurado, nada gravado`
-    );
-    return NextResponse.json({ recebido: true, persistido: false });
-  }
-
-  try {
-    switch (evento.type) {
-      case "checkout.session.completed": {
-        const sessao = evento.data.object;
-        if (!sessao.subscription) break;
-
-        const idAssinatura =
-          typeof sessao.subscription === "string"
-            ? sessao.subscription
-            : sessao.subscription.id;
-
-        const assinatura = await stripe.subscriptions.retrieve(idAssinatura);
-        await registrarAssinatura(stripe, assinatura, sessao.id);
-        break;
+  switch (evento.type) {
+    case "checkout.session.completed":
+    case "customer.subscription.created":
+    case "customer.subscription.updated":
+    case "customer.subscription.deleted":
+    case "invoice.payment_failed": {
+      const email = await emailDoEvento(stripe, evento);
+      if (email) {
+        limparCacheDeAssinatura(email);
+        console.log(`[stripe] ${evento.type} — acesso reavaliado para ${email}`);
+      } else {
+        console.warn(`[stripe] ${evento.type} sem e-mail identificável`);
       }
-
-      case "customer.subscription.created":
-      case "customer.subscription.updated": {
-        await registrarAssinatura(stripe, evento.data.object);
-        break;
-      }
-
-      case "customer.subscription.deleted": {
-        const assinatura = evento.data.object;
-        await atualizarPorSubscriptionId(assinatura.id, {
-          status: "canceled",
-          periodoFim: periodoFimDe(assinatura),
-        });
-        console.log(`[stripe] assinatura ${assinatura.id} encerrada`);
-        break;
-      }
-
-      case "invoice.payment_failed": {
-        // O status novo chega em customer.subscription.updated; aqui só o registro.
-        console.warn(`[stripe] pagamento recusado: ${evento.id}`);
-        break;
-      }
-
-      default:
-        break;
+      break;
     }
-  } catch (erro) {
-    console.error(`[stripe] falha ao processar ${evento.type}`, erro);
-    // 500 faz o Stripe reentregar o evento, o que é o comportamento desejado.
-    return NextResponse.json(
-      { erro: "Falha ao processar o evento" },
-      { status: 500 }
-    );
+
+    default:
+      break;
   }
 
-  return NextResponse.json({ recebido: true, persistido: true });
+  return NextResponse.json({ recebido: true });
 }
