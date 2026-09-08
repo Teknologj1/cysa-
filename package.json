@@ -12,6 +12,7 @@
     "verificar:deploy": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/verificar-deploy.mjs",
     "test": "node --test --disable-warning=MODULE_TYPELESS_PACKAGE_JSON 'src/**/*.test.ts'",
     "gerar:catalogo": "tsx scripts/gerar-catalogo.mjs",
+    "gerar:link": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/gerar-link.mjs",
     "prebuild": "npm run verificar:conteudo && npm run gerar:catalogo",
     "verificar:bundle": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/verificar-bundle.mjs",
     "postbuild": "npm run verificar:bundle",

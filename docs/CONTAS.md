@@ -145,6 +145,49 @@ Não exigimos cadastro antes de pagar: a compra é registrada pelo e-mail do
 checkout, e o login apenas prova que aquele e-mail é seu. Menos atrito na venda,
 mesmo resultado.
 
+## Quando o e-mail não sai
+
+O Resend recusa o envio enquanto o domínio do remetente não estiver verificado:
+
+```
+403 {"statusCode":403,"message":"The <dominio> domain is not verified.
+Please, add and verify your domain on https://resend.com/domains"}
+```
+
+Isso é configuração do Resend, não do app. Duas saídas:
+
+**Verificar o domínio (definitivo).** Em resend.com/domains → *Add Domain*,
+informe o domínio e publique os registros DNS que ele mostrar (SPF, DKIM e,
+opcionalmente, DMARC) no painel do registrador. A verificação costuma levar de
+minutos a algumas horas. Depois disso `EMAIL_REMETENTE` pode usar qualquer
+endereço daquele domínio.
+
+**Remetente compartilhado (imediato, limitado).** Trocar `EMAIL_REMETENTE` para
+`CySA+ Prep <onboarding@resend.dev>` funciona sem verificar nada, mas o Resend
+só entrega para o endereço dono da conta. Serve para testar, não para atender
+cliente.
+
+### Gerar o link sem e-mail
+
+Enquanto o envio não funciona — e depois, no suporte, quando alguém não recebe o
+e-mail — dá para gerar o mesmo link na sua máquina:
+
+```bash
+AUTH_SECRET='<o valor que está na Vercel>' \
+NEXT_PUBLIC_SITE_URL='https://cysa-tau.vercel.app' \
+  npm run gerar:link -- contato@teknologji.com.br
+```
+
+O script (`scripts/gerar-link.mjs`) produz exatamente o token que
+`/api/auth/link` enviaria: mesma assinatura HMAC, mesma validade de 30 minutos.
+Ele não abre nenhuma rota nova no app em produção e não contorna nada — o link
+prova a posse do e-mail, e o direito ao conteúdo pago continua vindo do Stripe
+ou da lista de cortesia.
+
+> Rode na sua máquina. O `AUTH_SECRET` não deve ser colado em chat, ticket nem
+> commit: quem tem esse valor consegue emitir link de acesso para qualquer
+> e-mail.
+
 ## Acesso de cortesia
 
 Para equipe, revisão de conteúdo e demonstração existe a variável
