@@ -7,8 +7,8 @@
 export type PerguntaLab = {
   pergunta: string;
   alternativas: string[];
-  correta: number;
-  explicacao: string;
+  alternativaCerta: number;
+  comentario: string;
 };
 
 export type PassagemLab = {
@@ -40,8 +40,8 @@ export const PASSAGENS: PassagemLab[] = [
           "A scan failed twice",
           "The EDR tool went offline",
         ],
-        correta: 0,
-        explicacao:
+        alternativaCerta: 0,
+        comentario:
           "Impossible travel — dois logins de países diferentes com poucos minutos de intervalo — é sinal clássico de true positive.",
       },
       {
@@ -52,8 +52,8 @@ export const PASSAGENS: PassagemLab[] = [
           "Escalated straight to the SOC manager",
           "Ignored it until the next shift",
         ],
-        correta: 1,
-        explicacao:
+        alternativaCerta: 1,
+        comentario:
           "“Pivot into” a ferramenta de EDR significa ir checar a telemetria de endpoint para confirmar o que está realmente acontecendo.",
       },
     ],
@@ -72,8 +72,8 @@ export const PASSAGENS: PassagemLab[] = [
           "Physically blocks malicious IP addresses",
           "Replaces the incident response team",
         ],
-        correta: 1,
-        explicacao:
+        alternativaCerta: 1,
+        comentario:
           "O SIEM é descrito como motor de detecção e correlação. Automatizar a resposta é papel do SOAR.",
       },
       {
@@ -84,8 +84,8 @@ export const PASSAGENS: PassagemLab[] = [
           "Write the exam objectives",
           "Delete the SIEM's correlation rules",
         ],
-        correta: 1,
-        explicacao:
+        alternativaCerta: 1,
+        comentario:
           "Essa cadeia de ações automáticas — enriquecer, colocar em quarentena e abrir chamado — é exatamente o trabalho do SOAR.",
       },
     ],
@@ -104,8 +104,8 @@ export const PASSAGENS: PassagemLab[] = [
           "Because the SOC manager called them personally",
           "Because the alert queue was empty",
         ],
-        correta: 0,
-        explicacao:
+        alternativaCerta: 0,
+        comentario:
           "Handover escrito é o que preserva o contexto entre turnos. Menção de passagem não sobrevive à fila de alertas do turno seguinte.",
       },
       {
@@ -116,8 +116,8 @@ export const PASSAGENS: PassagemLab[] = [
           "A new SOAR runbook",
           "A change in shift schedule",
         ],
-        correta: 1,
-        explicacao:
+        alternativaCerta: 1,
+        comentario:
           "Watch items são coisas que merecem acompanhamento mas ainda não chegaram ao nível de caso formal.",
       },
     ],

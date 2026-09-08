@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { TOTAL_LICOES, minutosDaSecao } from "@/content/secoes";
+import {
+  TOTAL_LICOES_CATALOGO,
+  minutosDaSecaoCatalogo,
+} from "@/content/catalogo";
 import { ROADMAP } from "@/content/roadmap";
 import { FASES } from "@/content/fases";
 import { getDominio, rotuloDominio } from "@/content/dominios";
@@ -40,7 +43,7 @@ export default function CursoLista() {
         <div className="flex flex-wrap items-baseline justify-between gap-3">
           <span className="text-sm font-medium">Seu progresso</span>
           <span className="text-sm text-mutedFg">
-            {geral.feitas} de {TOTAL_LICOES} lições publicadas · {geral.percentual}%
+            {geral.feitas} de {TOTAL_LICOES_CATALOGO} lições publicadas · {geral.percentual}%
           </span>
         </div>
         <ProgressBar
@@ -122,7 +125,7 @@ export default function CursoLista() {
                         </p>
                         <p className="mt-2 text-xs text-mutedFg">
                           {secao.licoes.length} lições ·{" "}
-                          {formatarDuracao(minutosDaSecao(secao))} · {parcial.feitas}{" "}
+                          {formatarDuracao(minutosDaSecaoCatalogo(secao))} · {parcial.feitas}{" "}
                           concluída{parcial.feitas === 1 ? "" : "s"}
                         </p>
                         <ProgressBar

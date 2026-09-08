@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { vizinhas } from "@/content/secoes";
+import { vizinhas } from "../lib/navegacao";
 import { getDominio, rotuloDominio } from "@/content/dominios";
 import type {
   LicaoExtras,

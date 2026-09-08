@@ -54,6 +54,8 @@ Outros comandos:
 | `npm run build` / `npm start` | build de produção e servidor |
 | `npm run lint` / `npm run typecheck` | qualidade e tipos |
 | `npm test` | testes da decisão de acesso e da mesclagem de progresso |
+| `npm run gerar:catalogo` | regenera `content/catalogo.ts` (metadados seguros para o cliente); roda antes de todo build |
+| `npm run verificar:bundle` | falha se conteúdo pago aparecer no JavaScript público; roda depois de todo build |
 | `npm run stripe:setup` | cria produto e preços recorrentes na sua conta Stripe a partir de `content/planos.ts` (aceita `-- --dry-run`) |
 | `npm run verificar:deploy -- <url>` | confere um deploy publicado: rotas, PWA, cabeçalhos de segurança e checkout |
 
@@ -133,7 +135,9 @@ src/
     assinatura/              consulta da assinatura no Stripe
     email/                   envio do link de acesso
     progresso/               progresso do aluno no Upstash Redis
+    simulado/                seleção das questões, com gabarito
   content/                   currículo, questões, planos, FAQ, lab e empresa
+    catalogo.ts              GERADO: metadados seguros para o navegador
   lib/                       cliente Stripe (servidor)
 public/                      manifesto, ícones, página offline, SW customizado
 scripts/                     setup do Stripe e verificação de deploy

@@ -10,7 +10,11 @@
     "typecheck": "tsc --noEmit",
     "stripe:setup": "node --env-file-if-exists=.env.local --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/stripe-setup.mjs",
     "verificar:deploy": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/verificar-deploy.mjs",
-    "test": "node --test --disable-warning=MODULE_TYPELESS_PACKAGE_JSON 'src/**/*.test.ts'"
+    "test": "node --test --disable-warning=MODULE_TYPELESS_PACKAGE_JSON 'src/**/*.test.ts'",
+    "gerar:catalogo": "tsx scripts/gerar-catalogo.mjs",
+    "prebuild": "npm run gerar:catalogo",
+    "verificar:bundle": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/verificar-bundle.mjs",
+    "postbuild": "npm run verificar:bundle"
   },
   "dependencies": {
     "@upstash/redis": "^1.38.4",
@@ -32,6 +36,7 @@
     "eslint": "^9",
     "eslint-config-next": "^15.5.25",
     "tailwindcss": "^4",
+    "tsx": "^4.23.13",
     "typescript": "^5.9.2"
   }
 }

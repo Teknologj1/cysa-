@@ -4,30 +4,41 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { DOMINIOS, getDominio } from "@/content/dominios";
-import { SECOES } from "@/content/secoes";
-import { QUESTOES } from "@/content/questoes";
 import { EXAME } from "@/content/exame";
-import type { DominioId, Questao } from "@/content/types";
+import {
+  SECOES_COM_CHECKPOINT,
+  TOTAL_QUESTOES,
+  TOTAL_QUESTOES_GRATIS,
+} from "@/content/catalogo";
+import type { DominioId } from "@/content/types";
 import { useAssinatura } from "@/features/assinatura/AssinaturaProvider";
 import { useProgresso } from "@/features/progresso/ProgressoProvider";
 import ProgressBar from "@/components/ui/ProgressBar";
 import {
   CORTE_APROVACAO,
   type FiltroSimulado,
-  aplicarFiltro,
+  type QuestaoDoSimulado,
   calcularResultado,
-  questoesDisponiveis,
-  sortearQuestoes,
+  desempenhoPorDominio,
 } from "../lib/simulado";
 
-type Fase = "config" | "rodando" | "resultado";
+type Fase = "config" | "carregando" | "rodando" | "resultado";
 
 const OPCOES_QUANTIDADE = [5, 10, 20];
+const CHAVE_CACHE = "cysa:ultimo-simulado";
 
 function formatarTempo(segundos: number): string {
   const m = String(Math.floor(segundos / 60)).padStart(2, "0");
   const s = String(segundos % 60).padStart(2, "0");
   return `${m}:${s}`;
+}
+
+function parametrosDoFiltro(filtro: FiltroSimulado, quantidade: number): string {
+  const p = new URLSearchParams({ quantidade: String(quantidade) });
+  if (filtro.tipo === "dominio") p.set("dominio", filtro.dominio);
+  if (filtro.tipo === "secao") p.set("secao", filtro.secaoId);
+  if (filtro.tipo === "modoProva") p.set("modo", "prova");
+  return p.toString();
 }
 
 export default function SimuladoRunner() {
@@ -48,24 +59,15 @@ export default function SimuladoRunner() {
   );
   const [quantidade, setQuantidade] = useState(10);
   const [cronometrado, setCronometrado] = useState(true);
+  const [erro, setErro] = useState("");
 
-  const [questoes, setQuestoes] = useState<Questao[]>([]);
+  const [questoes, setQuestoes] = useState<QuestaoDoSimulado[]>([]);
   const [indice, setIndice] = useState(0);
   const [respostas, setRespostas] = useState<Record<string, number>>({});
   const [inicio, setInicio] = useState(0);
   const [segundos, setSegundos] = useState(0);
 
-  const disponiveis = useMemo(
-    () => questoesDisponiveis(assinante),
-    [assinante]
-  );
-  const filtradas = useMemo(
-    () => aplicarFiltro(disponiveis, filtro),
-    [disponiveis, filtro]
-  );
-
   const modoProva = filtro.tipo === "modoProva";
-  const alvo = modoProva ? EXAME.questoes : quantidade;
 
   useEffect(() => {
     if (fase !== "rodando" || !cronometrado) return;
@@ -76,16 +78,62 @@ export default function SimuladoRunner() {
     return () => clearInterval(timer);
   }, [fase, cronometrado, inicio]);
 
-  const iniciar = useCallback(() => {
-    const selecionadas = sortearQuestoes(filtradas, filtro, alvo);
-    if (selecionadas.length === 0) return;
-    setQuestoes(selecionadas);
-    setRespostas({});
-    setIndice(0);
-    setSegundos(0);
-    setInicio(Date.now());
-    setFase("rodando");
-  }, [filtradas, filtro, alvo]);
+  /**
+   * As questões vêm do servidor, que decide o que enviar conforme o direito de
+   * acesso. O último simulado carregado fica em cache para continuar
+   * funcionando offline.
+   */
+  const iniciar = useCallback(async () => {
+    setErro("");
+    setFase("carregando");
+
+    try {
+      const resposta = await fetch(
+        `/api/simulado?${parametrosDoFiltro(filtro, quantidade)}`,
+        { cache: "no-store" }
+      );
+      if (!resposta.ok) throw new Error("resposta inválida");
+
+      const dado = (await resposta.json()) as { questoes: QuestaoDoSimulado[] };
+      if (!dado.questoes?.length) {
+        setErro("Nenhuma questão disponível nesta seleção.");
+        setFase("config");
+        return;
+      }
+
+      try {
+        window.localStorage.setItem(CHAVE_CACHE, JSON.stringify(dado.questoes));
+      } catch {
+        // Armazenamento cheio ou bloqueado: seguimos sem cache.
+      }
+
+      setQuestoes(dado.questoes);
+      setRespostas({});
+      setIndice(0);
+      setSegundos(0);
+      setInicio(Date.now());
+      setFase("rodando");
+    } catch {
+      // Offline: repete o último simulado carregado, se houver.
+      try {
+        const cache = window.localStorage.getItem(CHAVE_CACHE);
+        const guardadas = cache ? (JSON.parse(cache) as QuestaoDoSimulado[]) : [];
+        if (guardadas.length > 0) {
+          setQuestoes(guardadas);
+          setRespostas({});
+          setIndice(0);
+          setSegundos(0);
+          setInicio(Date.now());
+          setFase("rodando");
+          return;
+        }
+      } catch {
+        // cache inválido
+      }
+      setErro("Não foi possível carregar as questões. Verifique sua conexão.");
+      setFase("config");
+    }
+  }, [filtro, quantidade]);
 
   const finalizar = useCallback(() => {
     const decorridos = Math.floor((Date.now() - inicio) / 1000);
@@ -94,11 +142,14 @@ export default function SimuladoRunner() {
     setFase("resultado");
   }, [inicio, questoes, respostas, registrarTentativa]);
 
+  const porDominio = useMemo(
+    () => desempenhoPorDominio(questoes, respostas),
+    [questoes, respostas]
+  );
+
   // ---------------------------------------------------------------- config
-  if (fase === "config") {
-    const secoesComQuestoes = SECOES.filter((s) =>
-      QUESTOES.some((q) => q.secaoId === s.id)
-    );
+  if (fase === "config" || fase === "carregando") {
+    const carregando = fase === "carregando";
 
     return (
       <div className="mx-auto max-w-3xl px-4 py-10">
@@ -106,15 +157,19 @@ export default function SimuladoRunner() {
         <p className="mt-3 text-mutedFg">
           Questões no estilo do {EXAME.codigo}, com explicação comentada ao
           final e relatório por domínio.
-          {!assinante && pronto && (
-            <> Você está no modo amostra, com {disponiveis.length} questões liberadas.</>
+          {pronto && !assinante && (
+            <>
+              {" "}
+              Você está no modo amostra, com {TOTAL_QUESTOES_GRATIS} questões
+              liberadas.
+            </>
           )}
         </p>
 
         {pronto && !assinante && (
           <div className="mt-6 rounded-2xl border border-cyan-500/40 bg-cyan-500/[0.06] p-4 text-sm">
             <p>
-              Assinantes acessam as {QUESTOES.length} questões, os checkpoints de
+              Assinantes acessam as {TOTAL_QUESTOES} questões, os checkpoints de
               seção e o simulado em modo prova.{" "}
               <Link href="/planos" className="font-medium text-primary hover:underline">
                 Ver planos →
@@ -137,9 +192,7 @@ export default function SimuladoRunner() {
               {DOMINIOS.map((dominio) => (
                 <BotaoFiltro
                   key={dominio.id}
-                  ativo={
-                    filtro.tipo === "dominio" && filtro.dominio === dominio.id
-                  }
+                  ativo={filtro.tipo === "dominio" && filtro.dominio === dominio.id}
                   onClick={() => setFiltro({ tipo: "dominio", dominio: dominio.id })}
                 >
                   {dominio.codigo} {dominio.nome}
@@ -147,16 +200,14 @@ export default function SimuladoRunner() {
               ))}
             </div>
 
-            {secoesComQuestoes.length > 0 && (
+            {SECOES_COM_CHECKPOINT.length > 0 && (
               <>
                 <p className="mt-5 text-sm font-medium">Checkpoint de seção</p>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {secoesComQuestoes.map((secao) => (
+                  {SECOES_COM_CHECKPOINT.map((secao) => (
                     <BotaoFiltro
                       key={secao.id}
-                      ativo={
-                        filtro.tipo === "secao" && filtro.secaoId === secao.id
-                      }
+                      ativo={filtro.tipo === "secao" && filtro.secaoId === secao.id}
                       onClick={() => setFiltro({ tipo: "secao", secaoId: secao.id })}
                     >
                       Seção {secao.numero}
@@ -197,18 +248,6 @@ export default function SimuladoRunner() {
             </fieldset>
           )}
 
-          <p className="text-xs text-mutedFg">
-            {filtradas.length} questões disponíveis nesta seleção
-            {modoProva && filtradas.length < EXAME.questoes && (
-              <>
-                {" "}
-                — o banco atual ainda não tem {EXAME.questoes} questões, então o
-                simulado usa todas as disponíveis mantendo a proporção entre
-                domínios.
-              </>
-            )}
-          </p>
-
           <label className="flex items-center gap-3 text-sm">
             <input
               type="checkbox"
@@ -219,15 +258,15 @@ export default function SimuladoRunner() {
             Cronometrar
           </label>
 
+          {erro && <p className="text-sm text-danger">{erro}</p>}
+
           <button
             type="button"
             onClick={iniciar}
-            disabled={filtradas.length === 0}
-            className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primaryFg transition hover:opacity-90 disabled:opacity-50"
+            disabled={carregando}
+            className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primaryFg transition hover:opacity-90 disabled:opacity-60"
           >
-            {filtradas.length === 0
-              ? "Nenhuma questão nesta seleção"
-              : "Iniciar simulado"}
+            {carregando ? "Preparando…" : "Iniciar simulado"}
           </button>
         </div>
       </div>
@@ -283,10 +322,7 @@ export default function SimuladoRunner() {
                   key={alternativa}
                   type="button"
                   onClick={() =>
-                    setRespostas((anterior) => ({
-                      ...anterior,
-                      [questao.id]: i,
-                    }))
+                    setRespostas((anterior) => ({ ...anterior, [questao.id]: i }))
                   }
                   className={`flex w-full gap-3 rounded-xl border p-3 text-left text-sm transition ${
                     selecionada
@@ -350,19 +386,6 @@ export default function SimuladoRunner() {
   const acertos = questoes.filter((q) => respostas[q.id] === q.correta).length;
   const percentualAcerto = Math.round((acertos / questoes.length) * 100);
   const aprovado = percentualAcerto >= CORTE_APROVACAO;
-
-  const porDominio = DOMINIOS.filter((d) =>
-    questoes.some((q) => q.dominio === d.id)
-  ).map((dominio) => {
-    const doDominio = questoes.filter((q) => q.dominio === dominio.id);
-    const certas = doDominio.filter((q) => respostas[q.id] === q.correta).length;
-    return {
-      dominio,
-      certas,
-      total: doDominio.length,
-      pct: Math.round((certas / doDominio.length) * 100),
-    };
-  });
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">

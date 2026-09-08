@@ -102,11 +102,22 @@ produção — útil para publicar a estrutura antes do texto ficar pronto.
 
 A explicação é o que faz a questão valer: diga o raciocínio, não só o gabarito.
 
+## Uma regra que não pode ser quebrada
+
+Nunca importe `@/content/secoes` ou `@/content/questoes` de um componente com
+`"use client"`. Tudo que a interface importa vai para o JavaScript público, e
+isso entregaria o corpo das lições e o gabarito das questões a qualquer
+visitante.
+
+Na interface, use `@/content/catalogo` — metadados gerados no build. Conteúdo
+pago vem do servidor, por props ou por rota de API. O `npm run verificar:bundle`
+roda depois de todo build e falha se isso escapar.
+
 ## Depois de adicionar conteúdo
 
 ```bash
 npm run typecheck   # os contratos pegam ID duplicado, campo faltando, domínio inválido
-npm run build       # gera as páginas estáticas das novas lições
+npm run build       # regenera o catálogo, gera as páginas e verifica o bundle
 ```
 
 O restante do app se ajusta sozinho: contagem de lições na landing, progresso,

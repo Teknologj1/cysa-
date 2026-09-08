@@ -1,7 +1,12 @@
-import { QUESTOES, embaralhar } from "@/content/questoes";
-import { distribuirPorPeso } from "@/content/dominios";
-import type { DominioId, Questao } from "@/content/types";
+import { DOMINIOS } from "@/content/dominios";
+import type { DominioId } from "@/content/types";
 import type { TentativaSimulado } from "@/features/progresso/lib/progresso";
+
+/**
+ * Regras do simulado que valem nos dois lados. A seleção das questões fica no
+ * servidor (`server/simulado/selecao.ts`): o banco com gabarito não pode ser
+ * embutido no JavaScript público.
+ */
 
 export type FiltroSimulado =
   | { tipo: "todos" }
@@ -9,63 +14,20 @@ export type FiltroSimulado =
   | { tipo: "secao"; secaoId: string }
   | { tipo: "modoProva" };
 
-/** Questões disponíveis conforme o acesso do aluno. */
-export function questoesDisponiveis(assinante: boolean): Questao[] {
-  return assinante ? QUESTOES : QUESTOES.filter((q) => q.gratis);
-}
-
-export function aplicarFiltro(
-  questoes: Questao[],
-  filtro: FiltroSimulado
-): Questao[] {
-  switch (filtro.tipo) {
-    case "dominio":
-      return questoes.filter((q) => q.dominio === filtro.dominio);
-    case "secao":
-      return questoes.filter((q) => q.secaoId === filtro.secaoId);
-    default:
-      return questoes;
-  }
-}
-
-/**
- * Sorteia as questões do simulado. No modo prova a distribuição respeita o
- * peso oficial de cada domínio; nos demais, sorteia dentro do filtro.
- */
-export function sortearQuestoes(
-  questoes: Questao[],
-  filtro: FiltroSimulado,
-  quantidade: number
-): Questao[] {
-  if (filtro.tipo !== "modoProva") {
-    return embaralhar(questoes).slice(0, Math.min(quantidade, questoes.length));
-  }
-
-  const cotas = distribuirPorPeso(quantidade);
-  const selecionadas: Questao[] = [];
-
-  for (const [dominio, cota] of Object.entries(cotas)) {
-    const doDominio = embaralhar(
-      questoes.filter((q) => q.dominio === (dominio as DominioId))
-    );
-    selecionadas.push(...doDominio.slice(0, cota));
-  }
-
-  // Completa com o que sobrou caso algum domínio ainda não tenha questões suficientes.
-  if (selecionadas.length < Math.min(quantidade, questoes.length)) {
-    const restantes = embaralhar(
-      questoes.filter((q) => !selecionadas.includes(q))
-    );
-    selecionadas.push(
-      ...restantes.slice(0, Math.min(quantidade, questoes.length) - selecionadas.length)
-    );
-  }
-
-  return embaralhar(selecionadas);
-}
+/** Questão como ela chega ao navegador. */
+export type QuestaoDoSimulado = {
+  id: string;
+  dominio: DominioId;
+  secaoId?: string;
+  objetivo?: string;
+  enunciado: string;
+  alternativas: string[];
+  correta: number;
+  explicacao: string;
+};
 
 export function calcularResultado(
-  questoes: Questao[],
+  questoes: QuestaoDoSimulado[],
   respostas: Record<string, number>,
   segundos: number
 ): TentativaSimulado {
@@ -90,6 +52,26 @@ export function calcularResultado(
     porDominio,
     segundos,
   };
+}
+
+export function desempenhoPorDominio(
+  questoes: QuestaoDoSimulado[],
+  respostas: Record<string, number>
+) {
+  return DOMINIOS.filter((d) => questoes.some((q) => q.dominio === d.id)).map(
+    (dominio) => {
+      const doDominio = questoes.filter((q) => q.dominio === dominio.id);
+      const certas = doDominio.filter(
+        (q) => respostas[q.id] === q.correta
+      ).length;
+      return {
+        dominio,
+        certas,
+        total: doDominio.length,
+        pct: Math.round((certas / doDominio.length) * 100),
+      };
+    }
+  );
 }
 
 /** Faixa a partir da qual a aprovação começa a ficar provável. */

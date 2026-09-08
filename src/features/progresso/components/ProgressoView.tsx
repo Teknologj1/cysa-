@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { DOMINIOS, getDominio } from "@/content/dominios";
-import { SECOES, TOTAL_LICOES } from "@/content/secoes";
+import { SECOES_CATALOGO, TOTAL_LICOES_CATALOGO } from "@/content/catalogo";
 import { EXAME } from "@/content/exame";
 import type { DominioId } from "@/content/types";
 import { useProgresso } from "../ProgressoProvider";
@@ -22,7 +22,7 @@ export default function ProgressoView() {
   const { contasAtivas, logado } = useAssinatura();
 
   const concluidas = progresso.licoesConcluidas.length;
-  const geral = percentual(concluidas, TOTAL_LICOES);
+  const geral = percentual(concluidas, TOTAL_LICOES_CATALOGO);
 
   /** Desempenho acumulado por domínio, somando todas as tentativas. */
   const desempenho = useMemo(() => {
@@ -120,13 +120,13 @@ export default function ProgressoView() {
         <div className="flex items-baseline justify-between">
           <h2 className="text-sm font-medium">Lições concluídas</h2>
           <span className="text-sm text-mutedFg">
-            {concluidas}/{TOTAL_LICOES} · {geral}%
+            {concluidas}/{TOTAL_LICOES_CATALOGO} · {geral}%
           </span>
         </div>
         <ProgressBar valor={geral} className="mt-3" rotulo="Progresso geral" />
 
         <div className="mt-6 space-y-3">
-          {SECOES.map((secao) => {
+          {SECOES_CATALOGO.map((secao) => {
             const feitas = secao.licoes.filter((l) =>
               progresso.licoesConcluidas.includes(l.id)
             ).length;

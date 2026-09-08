@@ -111,6 +111,30 @@ Por isso o servidor monta explicitamente o recorte que pode sair
 Vale para a página da lição e para a da seção. Ao criar uma tela nova que
 receba conteúdo, passe pelo mesmo recorte.
 
+### E o que vai para o JavaScript
+
+Existe um segundo caminho, mais silencioso: **tudo que um componente com
+`"use client"` importa é empacotado no JavaScript público**. Importar
+`@/content/secoes` ou `@/content/questoes` da interface embute o corpo das
+lições e o banco de questões — com gabarito — em um arquivo que qualquer
+visitante baixa. O paywall continua aparecendo na tela e o vazamento passa
+despercebido.
+
+A regra, então:
+
+| Camada | O que pode importar |
+| --- | --- |
+| Client Components | `@/content/catalogo` — metadados, gerado no build |
+| Server Components e rotas | `@/content/secoes`, `@/content/questoes` |
+
+O simulado segue esse desenho: a interface não conhece o banco, e busca as
+questões em `/api/simulado`, que decide o que enviar conforme o direito de
+acesso — sem assinatura, só a amostra gratuita sai.
+
+`npm run verificar:bundle` roda depois de todo build e **falha** se encontrar
+conteúdo pago nos chunks. O build da Vercel quebra em vez de publicar o
+vazamento.
+
 ## Como o acesso é decidido
 
 Status que dão acesso: `active`, `trialing` e `past_due` (pagamento em nova

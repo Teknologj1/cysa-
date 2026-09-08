@@ -195,7 +195,7 @@ export default function LabIngles() {
                     </p>
                     <div className="mt-3 space-y-2">
                       {pergunta.alternativas.map((alternativa, oi) => {
-                        const correta = oi === pergunta.correta;
+                        const correta = oi === pergunta.alternativaCerta;
                         const escolhida = marcada === oi;
 
                         let estilo =
@@ -227,7 +227,7 @@ export default function LabIngles() {
                     </div>
                     {respondida && (
                       <p className="mt-3 border-t border-border pt-3 text-sm text-mutedFg">
-                        {pergunta.explicacao}
+                        {pergunta.comentario}
                       </p>
                     )}
                   </li>

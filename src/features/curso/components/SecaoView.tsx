@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { SECOES, minutosDaSecao } from "@/content/secoes";
+import { SECOES_CATALOGO, minutosDaSecaoCatalogo } from "@/content/catalogo";
 import { getDominio, rotuloDominio } from "@/content/dominios";
 import type { Licao } from "@/content/types";
 import type { LicaoPublica, SecaoPublica } from "../lib/publico";
@@ -31,9 +31,10 @@ export default function SecaoView({ secao }: { secao: SecaoPublica }) {
   const cor = secao.dominio ? getDominio(secao.dominio).cor : "#94a3b8";
   const parcial = progressoDaSecao(secao, progresso.licoesConcluidas);
 
-  const indice = SECOES.findIndex((s) => s.id === secao.id);
-  const anterior = indice > 0 ? SECOES[indice - 1] : null;
-  const proxima = indice < SECOES.length - 1 ? SECOES[indice + 1] : null;
+  const indice = SECOES_CATALOGO.findIndex((s) => s.id === secao.id);
+  const anterior = indice > 0 ? SECOES_CATALOGO[indice - 1] : null;
+  const proxima =
+    indice < SECOES_CATALOGO.length - 1 ? SECOES_CATALOGO[indice + 1] : null;
 
   const liberada = (licao: LicaoPublica) => Boolean(licao.gratis) || (pronto && ativa);
 
@@ -82,7 +83,7 @@ export default function SecaoView({ secao }: { secao: SecaoPublica }) {
             <span className="font-medium">Progresso da seção</span>
             <span className="text-mutedFg">
               {parcial.feitas}/{parcial.total} ·{" "}
-              {formatarDuracao(minutosDaSecao(secao))}
+              {formatarDuracao(minutosDaSecaoCatalogo(secao))}
             </span>
           </div>
           <ProgressBar
