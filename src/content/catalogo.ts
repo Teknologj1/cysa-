@@ -295,6 +295,89 @@ export const SECOES_CATALOGO: SecaoPublica[] = [
         "rota": "/simulado?secao=s04"
       }
     ]
+  },
+  {
+    "id": "s05",
+    "numero": 5,
+    "titulo": "Arquitetura de rede",
+    "fase": "f1",
+    "dominio": "d1",
+    "descricao": "O perímetro acabou e algo tomou o lugar dele: identidade e segmentação. Zero trust, SASE, rede híbrida, isolamento em incidente e as práticas que separam quem detecta em minutos de quem descobre meses depois.",
+    "objetivos": [
+      "Explicar deperimetrização e os quatro fatores que a causaram",
+      "Distinguir zero trust como princípio de SASE como arquitetura",
+      "Escolher entre site-to-site VPN e link dedicado num cenário híbrido",
+      "Separar segmentação (preventiva) de isolamento (reativa)",
+      "Reconhecer beaconing, exfiltração e DNS tunneling em tráfego de saída",
+      "Identificar controles ausentes a partir de um cenário de rede"
+    ],
+    "licoes": [
+      {
+        "id": "s05l01",
+        "titulo": "Fundamentos de arquitetura de rede",
+        "resumo": "Por que o modelo de castelo e fosso morreu, o que tomou o lugar dele e como on-premise, nuvem e híbrido mudam o seu monitoramento.",
+        "minutos": 18,
+        "tipo": "aula",
+        "objetivo": "1.1",
+        "gratis": true
+      },
+      {
+        "id": "s05l02",
+        "titulo": "Zero Trust Network Architecture",
+        "resumo": "Nunca confie, sempre verifique: os quatro componentes, por que movimento lateral fica muito mais difícil e por que ZTNA não é VPN.",
+        "minutos": 20,
+        "tipo": "aula",
+        "objetivo": "1.1"
+      },
+      {
+        "id": "s05l03",
+        "titulo": "SASE: secure access service edge",
+        "resumo": "Os cinco componentes que a Gartner juntou num serviço só, e por que zero trust e SASE são coisas relacionadas mas diferentes.",
+        "minutos": 18,
+        "tipo": "aula",
+        "objetivo": "1.1"
+      },
+      {
+        "id": "s05l04",
+        "titulo": "Rede híbrida: conectando on-premise e nuvem",
+        "resumo": "Site-to-site VPN, links dedicados, transit gateways — e por que o atacante procura justamente a costura entre os dois ambientes.",
+        "minutos": 18,
+        "tipo": "aula",
+        "objetivo": "1.1"
+      },
+      {
+        "id": "s05l05",
+        "titulo": "Segmentação e isolamento",
+        "resumo": "Segmentação é o que você constrói antes; isolamento é o que você faz no meio do incidente. E por que isolar, nunca desligar.",
+        "minutos": 20,
+        "tipo": "aula",
+        "objetivo": "1.1"
+      },
+      {
+        "id": "s05l06",
+        "titulo": "Boas práticas de segurança de rede",
+        "resumo": "Menor privilégio na rede, defesa em profundidade, NAC, filtragem de saída e baseline — e por que quem não conhece a prática não reconhece a violação.",
+        "minutos": 20,
+        "tipo": "aula",
+        "objetivo": "1.1"
+      },
+      {
+        "id": "s05l07",
+        "titulo": "Lab: reconhecendo beaconing no Wireshark",
+        "resumo": "Gerar tráfego periódico controlado, isolá-lo com filtros de exibição e praticar de novo o limite entre o que a evidência mostra e o que ela não prova.",
+        "minutos": 25,
+        "tipo": "lab",
+        "objetivo": "1.1"
+      },
+      {
+        "id": "s05l08",
+        "titulo": "Checkpoint: arquitetura de rede",
+        "resumo": "Consolidação das seis lições e do lab: deperimetrização, zero trust, SASE, rede híbrida, segmentação, isolamento e monitoramento de saída.",
+        "minutos": 20,
+        "tipo": "checkpoint",
+        "rota": "/simulado?secao=s05"
+      }
+    ]
   }
 ];
 
@@ -323,12 +406,17 @@ export const SECOES_COM_CHECKPOINT: {
     "id": "s04",
     "numero": 4,
     "titulo": "Conceitos de infraestrutura de sistemas"
+  },
+  {
+    "id": "s05",
+    "numero": 5,
+    "titulo": "Arquitetura de rede"
   }
 ];
 
-export const TOTAL_LICOES_CATALOGO = 27;
-export const TOTAL_QUESTOES = 79;
-export const TOTAL_QUESTOES_GRATIS = 12;
+export const TOTAL_LICOES_CATALOGO = 35;
+export const TOTAL_QUESTOES = 104;
+export const TOTAL_QUESTOES_GRATIS = 13;
 
 export function getSecaoCatalogo(id: string): SecaoPublica | undefined {
   return SECOES_CATALOGO.find((secao) => secao.id === id);
