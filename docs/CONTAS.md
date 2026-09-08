@@ -145,6 +145,39 @@ Não exigimos cadastro antes de pagar: a compra é registrada pelo e-mail do
 checkout, e o login apenas prova que aquele e-mail é seu. Menos atrito na venda,
 mesmo resultado.
 
+## Acesso de cortesia
+
+Para equipe, revisão de conteúdo e demonstração existe a variável
+`ACESSO_CORTESIA`: uma lista de e-mails, separados por vírgula, que liberam o
+curso completo sem nenhuma assinatura no Stripe.
+
+```
+ACESSO_CORTESIA=contato@teknologji.com.br, revisor@teknologji.com.br
+```
+
+Como usar:
+
+1. Adicione a variável no projeto da Vercel, em **Settings → Environment
+   Variables**, tipo **Secret** (ela não é `NEXT_PUBLIC_`, então nunca chega ao
+   navegador — só o booleano do resultado sai para a interface).
+2. Faça um redeploy para a variável passar a valer.
+3. Peça o link de acesso em `/entrar` com esse e-mail e entre por ele. O login é
+   o mesmo dos assinantes; o que muda é só a origem do direito de acesso.
+
+Regras da comparação, em `src/lib/cortesia.ts`:
+
+- e-mail normalizado (sem espaços em volta, caixa ignorada)
+- **igualdade exata** — não há curinga nem casamento por domínio, para que um
+  erro de digitação na variável não libere mais gente do que o pretendido
+- lista ausente ou vazia não libera ninguém
+
+A conta de cortesia aparece em `/conta` com o selo **Cortesia** e um texto
+dizendo que não há cobrança associada — em vez de fingir uma assinatura que não
+existe. Sem cliente no Stripe, o botão do portal não aparece.
+
+> Cada e-mail nessa lista é uma assinatura que ninguém pagou. Revise a variável
+> junto com o restante da configuração e tire quem não precisa mais.
+
 ## Sincronização do progresso
 
 Lições concluídas, histórico de simulados e data-alvo da prova são o único dado

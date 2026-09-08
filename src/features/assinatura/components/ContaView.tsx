@@ -20,6 +20,8 @@ export type EstadoServidor = {
   logado: boolean;
   email: string | null;
   liberado: boolean;
+  /** Acesso concedido pela lista de cortesia, sem assinatura no Stripe. */
+  cortesia: boolean;
   assinatura: AssinaturaDoServidor | null;
 };
 
@@ -195,7 +197,9 @@ export default function ContaView({ servidor }: { servidor: EstadoServidor }) {
           >
             {assinatura
               ? (ROTULO_STATUS[assinatura.status] ?? assinatura.status)
-              : "Sem assinatura"}
+              : servidor.cortesia
+                ? "Cortesia"
+                : "Sem assinatura"}
           </span>
         </div>
 
@@ -221,6 +225,12 @@ export default function ContaView({ servidor }: { servidor: EstadoServidor }) {
               <dd className="text-right">{formatarData(assinatura.periodoFim)}</dd>
             </div>
           </dl>
+        ) : servidor.cortesia ? (
+          <p className="mt-4 text-sm text-mutedFg">
+            <strong>{servidor.email}</strong> tem acesso de cortesia ao curso
+            completo. Não há cobrança nem assinatura no Stripe associada a esta
+            conta.
+          </p>
         ) : (
           <p className="mt-4 text-sm text-mutedFg">
             Não encontramos nenhuma assinatura para <strong>{servidor.email}</strong>.
@@ -238,6 +248,13 @@ export default function ContaView({ servidor }: { servidor: EstadoServidor }) {
             >
               {abrindoPortal ? "Abrindo…" : "Gerenciar assinatura"}
             </button>
+          ) : servidor.cortesia ? (
+            <Link
+              href="/curso"
+              className="rounded-xl bg-primary px-5 py-2.5 text-center text-sm font-semibold text-primaryFg transition hover:opacity-90"
+            >
+              Ir para o curso
+            </Link>
           ) : (
             <Link
               href="/planos"

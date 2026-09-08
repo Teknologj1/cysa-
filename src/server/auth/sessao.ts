@@ -11,6 +11,7 @@ import {
   assinaturaPorEmail,
   temAcesso,
 } from "@/server/assinatura/stripe";
+import { temCortesia } from "@/lib/cortesia";
 
 /**
  * Contas só existem quando há segredo para assinar a sessão e Stripe para
@@ -54,6 +55,8 @@ export type AcessoDoUsuario = {
   contasAtivas: boolean;
   usuario: UsuarioAtual;
   assinatura: AssinaturaDoCliente | null;
+  /** Acesso concedido pela lista `ACESSO_CORTESIA`, sem passar pelo Stripe. */
+  cortesia: boolean;
   liberado: boolean;
 };
 
@@ -67,6 +70,7 @@ export async function acessoDoUsuario(): Promise<AcessoDoUsuario> {
       contasAtivas: false,
       usuario: null,
       assinatura: null,
+      cortesia: false,
       liberado: false,
     };
   }
@@ -77,15 +81,19 @@ export async function acessoDoUsuario(): Promise<AcessoDoUsuario> {
       contasAtivas: true,
       usuario: null,
       assinatura: null,
+      cortesia: false,
       liberado: false,
     };
   }
 
   const assinatura = await assinaturaPorEmail(usuario.email);
+  const cortesia = temCortesia(usuario.email, process.env.ACESSO_CORTESIA);
+
   return {
     contasAtivas: true,
     usuario,
     assinatura,
-    liberado: temAcesso(assinatura),
+    cortesia,
+    liberado: cortesia || temAcesso(assinatura),
   };
 }

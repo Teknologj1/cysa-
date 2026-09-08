@@ -18,6 +18,7 @@ export async function GET() {
       logado: Boolean(acesso.usuario),
       email: acesso.usuario?.email ?? null,
       liberado: acesso.liberado,
+      cortesia: acesso.cortesia,
       assinatura: acesso.assinatura
         ? {
             planoId: acesso.assinatura.planoId,
