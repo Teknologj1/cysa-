@@ -128,6 +128,88 @@ export const SECOES_CATALOGO: SecaoPublica[] = [
         "rota": "/simulado?secao=s02"
       }
     ]
+  },
+  {
+    "id": "s03",
+    "numero": 3,
+    "titulo": "Gestão de risco e controles de segurança",
+    "fase": "f1",
+    "dominio": "d2",
+    "descricao": "Por que cada controle existe: risco, como medi-lo, as quatro respostas possíveis e como escolher controles que o negócio entende e financia.",
+    "objetivos": [
+      "Explicar risco como interseção de ameaça, vulnerabilidade e impacto",
+      "Calcular ALE e SLE em uma questão baseada em desempenho",
+      "Distinguir risco inerente, residual, apetite e tolerância",
+      "Escolher entre aceitar, transferir, evitar e mitigar conforme o contexto",
+      "Classificar um controle por tipo e por função",
+      "Alinhar a seleção de controles ao que o negócio precisa proteger"
+    ],
+    "licoes": [
+      {
+        "id": "s03l01",
+        "titulo": "O que é risco em cibersegurança",
+        "resumo": "A interseção de ameaça, vulnerabilidade e impacto, e como medir risco por probabilidade e severidade.",
+        "minutos": 16,
+        "tipo": "aula",
+        "objetivo": "2.4"
+      },
+      {
+        "id": "s03l02",
+        "titulo": "Risco inerente, residual, apetite e tolerância",
+        "resumo": "Os quatro conceitos que estruturam toda conversa de risco — e a armadilha do risco zero.",
+        "minutos": 15,
+        "tipo": "aula",
+        "objetivo": "2.4"
+      },
+      {
+        "id": "s03l03",
+        "titulo": "As quatro estratégias de resposta ao risco",
+        "resumo": "Aceitar, transferir, evitar e mitigar — quando cada uma é a resposta certa, e o papel da exceção formal.",
+        "minutos": 17,
+        "tipo": "aula",
+        "objetivo": "2.4"
+      },
+      {
+        "id": "s03l04",
+        "titulo": "Tipos de controle: administrativo, técnico e físico",
+        "resumo": "As três categorias, o papel dos controles compensatórios e por que classificar pela natureza, não pelo meio.",
+        "minutos": 15,
+        "tipo": "aula",
+        "objetivo": "2.4"
+      },
+      {
+        "id": "s03l05",
+        "titulo": "Funções de controle: preventivo, detectivo, responsivo e corretivo",
+        "resumo": "A segunda dimensão — não o que o controle é, mas o que ele faz — e como tipo e função se combinam na prova.",
+        "minutos": 16,
+        "tipo": "aula",
+        "objetivo": "2.4"
+      },
+      {
+        "id": "s03l06",
+        "titulo": "Políticas, governança e SLOs",
+        "resumo": "A moldura administrativa que decide quais controles existem, quem responde por eles e o que conta como bom desempenho.",
+        "minutos": 16,
+        "tipo": "aula",
+        "objetivo": "4.2"
+      },
+      {
+        "id": "s03l07",
+        "titulo": "Alinhando controles ao risco do negócio",
+        "resumo": "BIA, as três perguntas da seleção de controle, lacunas documentadas e como traduzir risco técnico em linguagem de negócio.",
+        "minutos": 18,
+        "tipo": "aula",
+        "objetivo": "4.1"
+      },
+      {
+        "id": "s03l08",
+        "titulo": "Checkpoint: gestão de risco e controles",
+        "resumo": "Consolidação das sete lições: risco, cálculo de perda esperada, estratégias de resposta, tipos e funções de controle, governança e alinhamento ao negócio.",
+        "minutos": 20,
+        "tipo": "checkpoint",
+        "rota": "/simulado?secao=s03"
+      }
+    ]
   }
 ];
 
@@ -146,12 +228,17 @@ export const SECOES_COM_CHECKPOINT: {
     "id": "s02",
     "numero": 2,
     "titulo": "Fundamentos de operações de segurança"
+  },
+  {
+    "id": "s03",
+    "numero": 3,
+    "titulo": "Gestão de risco e controles de segurança"
   }
 ];
 
-export const TOTAL_LICOES_CATALOGO = 11;
-export const TOTAL_QUESTOES = 41;
-export const TOTAL_QUESTOES_GRATIS = 9;
+export const TOTAL_LICOES_CATALOGO = 19;
+export const TOTAL_QUESTOES = 58;
+export const TOTAL_QUESTOES_GRATIS = 11;
 
 export function getSecaoCatalogo(id: string): SecaoPublica | undefined {
   return SECOES_CATALOGO.find((secao) => secao.id === id);

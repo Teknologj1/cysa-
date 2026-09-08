@@ -2,10 +2,12 @@ import type { DominioId, Questao } from "../types";
 import { BANCO_GERAL } from "./banco-geral";
 import { QUESTOES_S01 } from "./s01";
 import { QUESTOES_S02 } from "./s02";
+import { QUESTOES_S03 } from "./s03";
 
 export const QUESTOES: Questao[] = [
   ...QUESTOES_S01,
   ...QUESTOES_S02,
+  ...QUESTOES_S03,
   ...BANCO_GERAL,
 ];
 
