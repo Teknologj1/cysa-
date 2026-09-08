@@ -26,6 +26,11 @@ export default function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/objetivos" className="hover:text-foreground">
+                Objetivos do exame
+              </Link>
+            </li>
+            <li>
               <Link href="/lab-ingles" className="hover:text-foreground">
                 SOC English Lab
               </Link>

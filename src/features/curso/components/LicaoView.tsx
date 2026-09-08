@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { vizinhas } from "../lib/navegacao";
 import { getDominio, rotuloDominio } from "@/content/dominios";
+import { getObjetivo } from "@/content/objetivos";
 import type {
   LicaoExtras,
   LicaoPublica,
@@ -71,6 +72,7 @@ export default function LicaoView({
   const aguardandoCliente = !acesso.contasAtivas && !pronto;
   const router = useRouter();
 
+  const objetivo = licao.objetivo ? getObjetivo(licao.objetivo) : undefined;
   const feita = progresso.licoesConcluidas.includes(licao.id);
   const { anterior, proxima } = vizinhas(licao.id);
   const cor = secao.dominio ? getDominio(secao.dominio).cor : "#94a3b8";
@@ -106,7 +108,10 @@ export default function LicaoView({
             {rotuloDominio(secao.dominio)}
           </span>
           {licao.objetivo && (
-            <span className="rounded-full bg-muted px-2.5 py-1 font-mono text-[11px] text-mutedFg">
+            <span
+              className="rounded-full bg-muted px-2.5 py-1 font-mono text-[11px] text-mutedFg"
+              title={getObjetivo(licao.objetivo)?.titulo}
+            >
               OBJ {licao.objetivo}
             </span>
           )}
@@ -120,6 +125,15 @@ export default function LicaoView({
 
         <h1 className="mt-4 text-3xl font-bold tracking-tight">{licao.titulo}</h1>
         <p className="mt-3 text-mutedFg">{licao.resumo}</p>
+
+        {objetivo && (
+          <p className="mt-4 border-l-2 border-border pl-3 text-sm text-mutedFg">
+            <span className="font-medium text-foreground">
+              Objetivo {objetivo.codigo}
+            </span>{" "}
+            — {objetivo.titulo}
+          </p>
+        )}
       </header>
 
       <div className="mt-8">

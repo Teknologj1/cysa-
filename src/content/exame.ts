@@ -12,6 +12,8 @@ export const EXAME = {
   notaMinima: 750,
   escala: { minima: 100, maxima: 900 },
   validadeAnos: 3,
+  /** Versão do documento oficial de objetivos que o curso segue. */
+  versaoObjetivos: "2.0",
   experienciaRecomendadaAnos: 4,
   objetivosUrl:
     "https://www.comptia.org/certifications/cybersecurity-analyst",

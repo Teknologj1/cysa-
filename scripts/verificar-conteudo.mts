@@ -10,6 +10,7 @@ import { SECOES, TOTAL_LICOES, TOTAL_MINUTOS } from "@/content/secoes";
 import { QUESTOES } from "@/content/questoes";
 import { questoesDisponiveis } from "@/server/simulado/selecao";
 import { DIAS_DE_CARENCIA, diasParaLiberarSecao } from "@/lib/liberacao";
+import { OBJETIVOS, objetivoExiste } from "@/content/objetivos";
 
 const problemas: string[] = [];
 
@@ -52,6 +53,29 @@ for (const secao of SECOES) {
     if (!licao.conteudo && !licao.roteiro && !licao.rota) {
       problemas.push(`${licao.id} não tem conteúdo, roteiro nem rota`);
     }
+  }
+}
+
+/**
+ * As marcações de objetivo precisam existir no documento oficial do CS0-004.
+ * Um código inventado engana o aluno sobre o que ele está estudando e some
+ * silenciosamente do mapa de cobertura.
+ */
+const marcacoes: { onde: string; codigo: string }[] = [
+  ...SECOES.flatMap((secao) =>
+    secao.licoes
+      .filter((l) => l.objetivo)
+      .map((l) => ({ onde: l.id, codigo: l.objetivo! }))
+  ),
+  ...QUESTOES.filter((q) => q.objetivo).map((q) => ({
+    onde: q.id,
+    codigo: q.objetivo!,
+  })),
+];
+
+for (const { onde, codigo } of marcacoes) {
+  if (!objetivoExiste(codigo)) {
+    problemas.push(`${onde}: objetivo "${codigo}" não existe no CS0-004`);
   }
 }
 
@@ -125,4 +149,13 @@ console.log(
 console.log(
   `✓ liberação: ${naEntrada.map((s) => s.id).join(", ")} na entrada; ` +
     `as demais no dia ${DIAS_DE_CARENCIA + 1}`
+);
+
+const cobertos = new Set(marcacoes.map((m) => m.codigo));
+const faltando = OBJETIVOS.filter((o) => !cobertos.has(o.codigo));
+console.log(
+  `✓ objetivos: ${cobertos.size} de ${OBJETIVOS.length} com conteúdo` +
+    (faltando.length > 0
+      ? ` (faltam ${faltando.map((o) => o.codigo).join(", ")})`
+      : "")
 );

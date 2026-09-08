@@ -113,6 +113,28 @@ Na interface, use `@/content/catalogo` — metadados gerados no build. Conteúdo
 pago vem do servidor, por props ou por rota de API. O `npm run verificar:bundle`
 roda depois de todo build e falha se isso escapar.
 
+## Objetivos oficiais
+
+`src/content/objetivos.ts` traz os 15 objetivos do CS0-004 conforme o documento
+oficial da CompTIA (versão 2.0), com os tópicos que cada um lista. É a fonte da
+verdade das marcações `objetivo` das lições e questões.
+
+Ao escrever conteúdo novo:
+
+1. Escolha o **código oficial** que a lição cobre e marque em `objetivo`.
+2. `scripts/verificar-conteudo.mts` **falha o build** se o código não existir na
+   lista — um código inventado engana o aluno e some do mapa de cobertura.
+3. O verificador também reporta a cobertura, no formato
+   `✓ objetivos: N de 15 com conteúdo (faltam …)`. Use isso para decidir o que
+   escrever em seguida.
+
+O mapa aparece para o aluno em `/objetivos`, com o peso de cada domínio e as
+seções que cobrem cada objetivo. Uma lição também exibe o título do objetivo na
+sua abertura, porque "OBJ 1.1" sozinho não diz nada.
+
+O `ROADMAP` (`src/content/roadmap.ts`) sai da mesma lista, para o curso prometer
+exatamente o que a prova cobra.
+
 ## Liberação progressiva
 
 Nos primeiros 7 dias de assinatura o aluno estuda **apenas as seções 1 e 2**. A

@@ -45,6 +45,12 @@ export default function CursoLista() {
           detecção e análise, então vulnerabilidades e resposta a incidentes e,
           por fim, relatórios e comunicação.
         </p>
+        <p className="mt-3 text-sm text-mutedFg">
+          Cada lição aponta para um objetivo oficial da prova.{" "}
+          <Link href="/objetivos" className="text-primary hover:underline">
+            Ver o mapa dos objetivos do CS0-004
+          </Link>
+        </p>
       </header>
 
       {/* Continuar de onde parou */}
