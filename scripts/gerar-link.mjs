@@ -53,7 +53,7 @@ function main() {
     console.error(`Faltou ${faltando.join(", ")}.\n`);
     console.error("Exemplo:");
     console.error(
-      "  AUTH_SECRET='...' NEXT_PUBLIC_SITE_URL='https://cysa-tau.vercel.app' \\"
+      "  AUTH_SECRET='...' NEXT_PUBLIC_SITE_URL='https://cysa-prep.vercel.app' \\"
     );
     console.error("    node scripts/gerar-link.mjs contato@teknologji.com.br");
     process.exit(1);

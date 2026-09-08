@@ -66,7 +66,7 @@ Em **Project → Settings → Environment Variables**, para *Production* e *Prev
 
 | Variável | Valor |
 | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | domínio **estável** do projeto, sem barra no fim (ex.: `https://cysa-tau.vercel.app`) |
+| `NEXT_PUBLIC_SITE_URL` | domínio **estável** do projeto, sem barra no fim (ex.: `https://cysa-prep.vercel.app`) |
 | `STRIPE_SECRET_KEY` | `sk_live_…` em produção, `sk_test_…` em preview |
 | `STRIPE_PRICE_MENSAL` | saída do passo 2 |
 | `STRIPE_PRICE_TRIMESTRAL` | saída do passo 2 |

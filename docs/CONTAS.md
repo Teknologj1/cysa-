@@ -154,13 +154,22 @@ O Resend recusa o envio enquanto o domínio do remetente não estiver verificado
 Please, add and verify your domain on https://resend.com/domains"}
 ```
 
-Isso é configuração do Resend, não do app. Duas saídas:
+Isso é configuração do Resend, não do app.
 
-**Verificar o domínio (definitivo).** Em resend.com/domains → *Add Domain*,
-informe o domínio e publique os registros DNS que ele mostrar (SPF, DKIM e,
-opcionalmente, DMARC) no painel do registrador. A verificação costuma levar de
-minutos a algumas horas. Depois disso `EMAIL_REMETENTE` pode usar qualquer
-endereço daquele domínio.
+O domínio que precisa ser verificado é o do **remetente** (`EMAIL_REMETENTE`),
+não o do site. São independentes: o app pode ficar em `cysa-prep.vercel.app`
+para sempre e enviar de `@teknologji.com.br`. Verificar `vercel.app` é
+impossível — o domínio é da Vercel, não nosso, e ninguém publica DNS nele.
+
+Duas saídas:
+
+**Verificar o domínio próprio (definitivo).** Em resend.com/domains →
+*Add Domain*, informe `teknologji.com.br` e publique os registros que ele
+mostrar (SPF, DKIM e, opcionalmente, DMARC) onde estão os nameservers do
+domínio. Para `.com.br` o registrador é sempre o Registro.br; os registros vão
+lá mesmo (DNS → Editar zona) ou no painel para onde os nameservers apontarem.
+A verificação costuma levar de minutos a algumas horas. Depois disso
+`EMAIL_REMETENTE` pode usar qualquer endereço daquele domínio.
 
 **Remetente compartilhado (imediato, limitado).** Trocar `EMAIL_REMETENTE` para
 `CySA+ Prep <onboarding@resend.dev>` funciona sem verificar nada, mas o Resend
@@ -174,7 +183,7 @@ e-mail — dá para gerar o mesmo link na sua máquina:
 
 ```bash
 AUTH_SECRET='<o valor que está na Vercel>' \
-NEXT_PUBLIC_SITE_URL='https://cysa-tau.vercel.app' \
+NEXT_PUBLIC_SITE_URL='https://cysa-prep.vercel.app' \
   npm run gerar:link -- contato@teknologji.com.br
 ```
 

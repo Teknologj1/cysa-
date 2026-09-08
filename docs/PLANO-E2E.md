@@ -3,7 +3,7 @@
 Da primeira visita na landing até o aluno concluir uma lição e fazer o
 checkpoint. Este documento é o mapa do que já funciona e do que falta.
 
-**Em produção:** https://cysa-tau.vercel.app — Vercel, Stripe em modo live e
+**Em produção:** https://cysa-prep.vercel.app — Vercel, Stripe em modo live e
 webhook de assinaturas configurados.
 
 ## O funil, passo a passo
