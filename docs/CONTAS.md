@@ -72,7 +72,7 @@ entra pelo retorno do pagamento.
 
 | Variável | Valor | Type |
 | --- | --- | --- |
-| `RESEND_API_KEY` | `re_…` | **Secret** |
+| `RESEND_SECRET_KEY` | `re_…` | **Secret** |
 | `EMAIL_REMETENTE` | `CySA+ Prep <acesso@seudominio.com.br>` | Config |
 
 Sem domínio verificado, o Resend só entrega para o e-mail da própria conta —

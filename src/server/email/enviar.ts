@@ -6,7 +6,7 @@ import { EMPRESA, NOME_PRODUTO } from "@/content/empresa";
  */
 
 export function emailConfigurado(): boolean {
-  return Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_REMETENTE);
+  return Boolean(process.env.RESEND_SECRET_KEY && process.env.EMAIL_REMETENTE);
 }
 
 type Resultado = { ok: true } | { ok: false; erro: string };
@@ -20,7 +20,7 @@ async function enviar(para: string, assunto: string, html: string): Promise<Resu
     const resposta = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        Authorization: `Bearer ${process.env.RESEND_SECRET_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
