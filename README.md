@@ -53,7 +53,7 @@ Outros comandos:
 | --- | --- |
 | `npm run build` / `npm start` | build de produção e servidor |
 | `npm run lint` / `npm run typecheck` | qualidade e tipos |
-| `npm test` | testes da decisão de acesso ao conteúdo pago |
+| `npm test` | testes da decisão de acesso e da mesclagem de progresso |
 | `npm run stripe:setup` | cria produto e preços recorrentes na sua conta Stripe a partir de `content/planos.ts` (aceita `-- --dry-run`) |
 | `npm run verificar:deploy -- <url>` | confere um deploy publicado: rotas, PWA, cabeçalhos de segurança e checkout |
 
@@ -132,6 +132,7 @@ src/
     auth/                    tokens assinados e sessão
     assinatura/              consulta da assinatura no Stripe
     email/                   envio do link de acesso
+    progresso/               progresso do aluno no Upstash Redis
   content/                   currículo, questões, planos, FAQ, lab e empresa
   lib/                       cliente Stripe (servidor)
 public/                      manifesto, ícones, página offline, SW customizado

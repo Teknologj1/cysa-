@@ -21,7 +21,7 @@ webhook de assinaturas configurados.
 | 8 | Abre uma seção e uma lição | `/curso/[secaoId]/[licaoId]` | ✅ pronto |
 | 9 | Estuda, marca como concluída e avança | mesma tela | ✅ pronto |
 | 10 | Faz o checkpoint da seção | `/simulado?secao=sNN` | ✅ pronto |
-| 11 | Vê o desempenho por domínio e o que revisar | `/progresso` | ✅ pronto |
+| 11 | Vê o desempenho por domínio e o que revisar | `/progresso` | ✅ pronto, sincronizado entre aparelhos |
 | 12 | Treina o inglês do SOC | `/lab-ingles` | ✅ pronto |
 | 13 | Gerencia a assinatura | `/conta` → portal do Stripe | ✅ pronto |
 | 14 | Instala o app e estuda offline | PWA | ✅ pronto |
@@ -45,7 +45,7 @@ Roteiro completo em [`DEPLOY-VERCEL.md`](DEPLOY-VERCEL.md).
 > O ciclo completo foi validado em modo teste: checkout, retorno em `/sucesso`,
 > liberação do conteúdo e webhook entregando 200.
 
-### Fase B — direito de acesso confiável ✅ implementada, aguardando configuração
+### Fase B — direito de acesso confiável ✅ implementada
 
 Guia de configuração em [`CONTAS.md`](CONTAS.md).
 
@@ -57,9 +57,8 @@ Guia de configuração em [`CONTAS.md`](CONTAS.md).
    enviado sem direito de acesso, em vez de ficar escondido no cliente
 9. ✅ **Portal do cliente do Stripe** em `/conta`, para trocar cartão, ver
    faturas e cancelar
-10. ⏳ **Sincronizar progresso** com a conta, mantendo o `localStorage` como
-    cache offline — é o único item que realmente exige um banco, já que esse
-    dado é nosso e não do Stripe
+10. ✅ **Progresso sincronizado** com a conta no Upstash Redis, com mesclagem
+    sem perda entre aparelhos e o `localStorage` seguindo como cache offline
 
 > Enquanto `AUTH_SECRET` não estiver configurada, o app segue exatamente como
 > antes, com a assinatura registrada no aparelho. A troca é silenciosa:

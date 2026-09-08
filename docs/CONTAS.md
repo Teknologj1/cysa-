@@ -121,6 +121,46 @@ Não exigimos cadastro antes de pagar: a compra é registrada pelo e-mail do
 checkout, e o login apenas prova que aquele e-mail é seu. Menos atrito na venda,
 mesmo resultado.
 
+## Sincronização do progresso
+
+Lições concluídas, histórico de simulados e data-alvo da prova são o único dado
+do produto que não vive no Stripe — ele é nosso, e por isso precisa de
+armazenamento próprio.
+
+### Configurar
+
+1. Em [upstash.com](https://upstash.com), crie um banco Redis (região São Paulo
+   ou us-east-1; o tier gratuito cobre folgadamente esse volume)
+2. Copie **REST URL** e **REST Token**
+3. Cadastre na Vercel:
+
+| Variável | Type |
+| --- | --- |
+| `UPSTASH_REDIS_REST_URL` | Config |
+| `UPSTASH_REDIS_REST_TOKEN` | **Secret** |
+
+Sem elas, o progresso continua funcionando — só não acompanha o aluno entre
+aparelhos.
+
+### Como a mesclagem funciona
+
+O `localStorage` continua sendo a fonte imediata: o aparelho grava na hora e
+envia ao servidor dois segundos depois da última alteração. Ao entrar na conta,
+o app puxa o que existe e mescla com o que está no aparelho.
+
+A mesclagem é feita no servidor, com regras explícitas
+(`lib/progresso-merge.ts`, coberto por testes):
+
+| Dado | Regra |
+| --- | --- |
+| Lições concluídas | **união** dos dois lados — nada se perde |
+| Histórico de simulados | união por id, mais recentes primeiro, limite de 30 |
+| Data-alvo da prova | vence a alteração mais recente |
+
+A união nas lições tem uma consequência deliberada: **desmarcar uma lição vale
+só no aparelho onde foi desmarcada**. É o preço de nunca descartar o estudo de
+quem trabalhou offline, e o erro mais barato dos dois.
+
 ## Limites conhecidos
 
 - **O link de acesso pode ser reusado dentro dos 30 minutos de validade.**
@@ -129,9 +169,6 @@ mesmo resultado.
 - **O cache de 5 minutos é por instância.** O webhook derruba o cache da
   instância que o recebeu; outra instância pode levar alguns minutos para
   reavaliar. Na prática o efeito é imperceptível.
-- **Progresso ainda é local.** Lições concluídas e simulados continuam no
-  aparelho, não na conta — esse dado é nosso, não do Stripe, e é o que
-  justificaria um banco no futuro.
 - **Conteúdo já baixado continua offline.** O service worker guarda as páginas
   visitadas; quem cancela mantém no cache o que já abriu, até o cache expirar.
   Rotas de sessão, pagamento e autenticação nunca são cacheadas.

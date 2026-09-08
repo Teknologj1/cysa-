@@ -278,9 +278,9 @@ export default function ContaView({ servidor }: { servidor: EstadoServidor }) {
       <section className="mt-6 rounded-2xl border border-border bg-muted/20 p-5">
         <h2 className="text-sm font-medium">Privacidade dos seus dados</h2>
         <p className="mt-3 text-sm text-mutedFg">
-          Seu progresso e o histórico de simulados ficam gravados neste aparelho.
-          Os dados de pagamento são processados pelo Stripe e não passam por este
-          app.{" "}
+          Seu progresso e o histórico de simulados ficam no seu aparelho e, se
+          você estiver logado, sincronizados com a sua conta. Os dados de
+          pagamento são processados pelo Stripe e não passam por este app.{" "}
           <Link href="/privacidade" className="text-primary hover:underline">
             Política de privacidade
           </Link>

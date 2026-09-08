@@ -7,6 +7,7 @@ import { SECOES, TOTAL_LICOES } from "@/content/secoes";
 import { EXAME } from "@/content/exame";
 import type { DominioId } from "@/content/types";
 import { useProgresso } from "../ProgressoProvider";
+import { useAssinatura } from "@/features/assinatura/AssinaturaProvider";
 import ProgressBar from "@/components/ui/ProgressBar";
 import { percentual } from "../lib/progresso";
 import { CORTE_APROVACAO } from "@/features/simulado/lib/simulado";
@@ -16,7 +17,9 @@ function diasAte(iso: string): number {
 }
 
 export default function ProgressoView() {
-  const { progresso, definirDataProva, limpar, pronto } = useProgresso();
+  const { progresso, definirDataProva, limpar, pronto, sincronizando } =
+    useProgresso();
+  const { contasAtivas, logado } = useAssinatura();
 
   const concluidas = progresso.licoesConcluidas.length;
   const geral = percentual(concluidas, TOTAL_LICOES);
@@ -66,8 +69,23 @@ export default function ProgressoView() {
     <div className="mx-auto max-w-3xl px-4 py-10">
       <h1 className="text-3xl font-bold tracking-tight">Meu progresso</h1>
       <p className="mt-3 text-mutedFg">
-        Tudo é salvo neste aparelho — funciona mesmo offline.
+        {logado
+          ? "Salvo neste aparelho e sincronizado com a sua conta — funciona offline e acompanha você em qualquer dispositivo."
+          : "Salvo neste aparelho — funciona mesmo offline."}
       </p>
+
+      {contasAtivas && !logado && (
+        <p className="mt-3 text-sm text-mutedFg">
+          <Link href="/entrar?proximo=/progresso" className="text-primary hover:underline">
+            Entre na sua conta
+          </Link>{" "}
+          para o progresso acompanhar você em outros aparelhos.
+        </p>
+      )}
+
+      {sincronizando && (
+        <p className="mt-3 text-xs text-mutedFg">Sincronizando…</p>
+      )}
 
       {/* Meta da prova */}
       <section className="mt-8 rounded-2xl border border-border bg-muted/20 p-5">
@@ -262,6 +280,12 @@ export default function ProgressoView() {
           >
             Apagar progresso deste aparelho
           </button>
+          {logado && (
+            <p className="mt-2 text-xs text-mutedFg">
+              O que já foi sincronizado permanece na sua conta e volta na
+              próxima sincronização.
+            </p>
+          )}
         </section>
       )}
     </div>

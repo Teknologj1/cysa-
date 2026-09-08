@@ -49,9 +49,11 @@ export default function PrivacidadePage() {
           </h2>
           <p className="mt-2">
             O progresso das lições, o histórico de simulados e a data-alvo da
-            prova ficam armazenados localmente no seu navegador (armazenamento
-            local) e não são enviados aos nossos servidores. Você pode apagá-los
-            a qualquer momento na tela de progresso.
+            prova ficam armazenados no seu navegador. Se você entrar na sua
+            conta, esses dados também são sincronizados com o nosso
+            armazenamento, associados ao seu e-mail, para que o estudo acompanhe
+            você em outros aparelhos. Você pode apagá-los a qualquer momento na
+            tela de progresso.
           </p>
         </section>
 
@@ -83,6 +85,14 @@ export default function PrivacidadePage() {
             <li>
               <strong className="text-foreground">Vercel</strong> — hospedagem da
               aplicação e entrega do conteúdo
+            </li>
+            <li>
+              <strong className="text-foreground">Upstash</strong> — armazenamento
+              do progresso de estudo associado ao seu e-mail
+            </li>
+            <li>
+              <strong className="text-foreground">Resend</strong> — envio do link
+              de acesso à sua conta
             </li>
           </ul>
           <p className="mt-2">
