@@ -5,6 +5,7 @@ import { QUESTOES_S02 } from "./s02";
 import { QUESTOES_S03 } from "./s03";
 import { QUESTOES_S04 } from "./s04";
 import { QUESTOES_S05 } from "./s05";
+import { QUESTOES_S06 } from "./s06";
 
 export const QUESTOES: Questao[] = [
   ...QUESTOES_S01,
@@ -12,6 +13,7 @@ export const QUESTOES: Questao[] = [
   ...QUESTOES_S03,
   ...QUESTOES_S04,
   ...QUESTOES_S05,
+  ...QUESTOES_S06,
   ...BANCO_GERAL,
 ];
 

@@ -378,6 +378,81 @@ export const SECOES_CATALOGO: SecaoPublica[] = [
         "rota": "/simulado?secao=s05"
       }
     ]
+  },
+  {
+    "id": "s06",
+    "numero": 6,
+    "titulo": "Infraestrutura crítica: OT, ICS e SCADA",
+    "fase": "f1",
+    "dominio": "d1",
+    "descricao": "Onde a falha deixa de ser vazamento de dado e vira consequência física. Rede elétrica, tratamento de água, hospitais — e por que aqui a tríade CIA inverte para AIC.",
+    "objetivos": [
+      "Explicar o que é infraestrutura crítica e o papel de CISA e ISACs",
+      "Distinguir OT de TI e descrever as camadas do modelo Purdue",
+      "Diferenciar ICS, DCS e SCADA, e saber quando cada um se aplica",
+      "Reconhecer indicadores de comprometimento específicos de OT",
+      "Escolher controles compensatórios quando não é possível aplicar patch",
+      "Justificar por que a resposta em OT é passiva e coordenada com a operação"
+    ],
+    "licoes": [
+      {
+        "id": "s06l01",
+        "titulo": "Introdução à infraestrutura crítica",
+        "resumo": "Os 16 setores da CISA, o papel dos ISACs no compartilhamento de inteligência e a inversão da tríade CIA que a prova adora cobrar.",
+        "minutos": 18,
+        "tipo": "aula",
+        "objetivo": "1.1",
+        "gratis": true
+      },
+      {
+        "id": "s06l02",
+        "titulo": "Fundamentos de tecnologia operacional (OT)",
+        "resumo": "TI processa dado, OT controla coisa. O modelo Purdue, PLCs, HMIs, historiadores — e o air gap que deixou de existir.",
+        "minutos": 20,
+        "tipo": "aula",
+        "objetivo": "1.1"
+      },
+      {
+        "id": "s06l03",
+        "titulo": "Sistemas de controle industrial (ICS)",
+        "resumo": "A implementação concreta do OT: componentes, DCS contra SCADA, protocolos sem segurança nativa e por que varredura ativa é proibida.",
+        "minutos": 20,
+        "tipo": "aula",
+        "objetivo": "1.1"
+      },
+      {
+        "id": "s06l04",
+        "titulo": "SCADA",
+        "resumo": "Controle supervisório em escala regional: MTU, RTUs, protocolos de longa distância, e o Stuxnet como modelo de ameaça definidor.",
+        "minutos": 20,
+        "tipo": "aula",
+        "objetivo": "1.1"
+      },
+      {
+        "id": "s06l05",
+        "titulo": "Cenário de ameaças em OT, ICS e SCADA",
+        "resumo": "Quem ataca, por onde entra e o que faz depois — e os indicadores de comprometimento que só existem em ambiente industrial.",
+        "minutos": 20,
+        "tipo": "aula",
+        "objetivo": "1.2"
+      },
+      {
+        "id": "s06l06",
+        "titulo": "Segurança para infraestrutura crítica",
+        "resumo": "IDMZ, data diodes, controles compensatórios no lugar do patch, monitoramento passivo, acesso remoto por jump server e sistemas instrumentados de segurança.",
+        "minutos": 22,
+        "tipo": "aula",
+        "objetivo": "1.1"
+      },
+      {
+        "id": "s06l07",
+        "titulo": "Checkpoint: infraestrutura crítica",
+        "resumo": "Consolidação das seis lições: setores e ISACs, modelo Purdue, ICS, DCS e SCADA, indicadores de OT e controles compensatórios.",
+        "minutos": 20,
+        "tipo": "checkpoint",
+        "rota": "/simulado?secao=s06"
+      }
+    ]
   }
 ];
 
@@ -411,12 +486,17 @@ export const SECOES_COM_CHECKPOINT: {
     "id": "s05",
     "numero": 5,
     "titulo": "Arquitetura de rede"
+  },
+  {
+    "id": "s06",
+    "numero": 6,
+    "titulo": "Infraestrutura crítica: OT, ICS e SCADA"
   }
 ];
 
-export const TOTAL_LICOES_CATALOGO = 35;
-export const TOTAL_QUESTOES = 104;
-export const TOTAL_QUESTOES_GRATIS = 13;
+export const TOTAL_LICOES_CATALOGO = 42;
+export const TOTAL_QUESTOES = 130;
+export const TOTAL_QUESTOES_GRATIS = 14;
 
 export function getSecaoCatalogo(id: string): SecaoPublica | undefined {
   return SECOES_CATALOGO.find((secao) => secao.id === id);

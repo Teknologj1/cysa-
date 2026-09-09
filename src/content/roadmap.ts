@@ -17,14 +17,13 @@ export type BlocoRoadmap = {
 export const ROADMAP: BlocoRoadmap[] = [
   {
     fase: "f1",
-    intervalo: "Seções 6 a 11",
+    intervalo: "Seções 7 a 11",
     temas: [
       "Segurança de sistemas operacionais e hardening",
       "Logging: ingestão, integridade, sincronização e retenção",
       "Identidade e acesso: PAM e secrets management",
       "Técnicas de criptografia",
       "Proteção de dados",
-      "Infraestrutura crítica: OT, ICS e SCADA",
     ],
   },
   {
